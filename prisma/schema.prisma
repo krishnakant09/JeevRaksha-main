@@ -1,0 +1,199 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String?
+  password      String
+  role          String         @default("FARMER") // FARMER, VETERINARIAN, FIELD_WORKER, LABORATORY, ADMIN
+  createdAt     DateTime       @default(now())
+  animals       Animal[]       // If farmer
+  reportsFiled  HealthReport[] @relation("Reporter")
+  fieldVisits   FieldVisit[]   @relation("FieldWorker")
+  casesAssigned Case[]         @relation("VetAssigned")
+  samplesProcessed Sample[]    @relation("LabUser")
+}
+
+model Animal {
+  id              String         @id @default(cuid())
+  species         String
+  breed           String?
+  age             Int?
+  gender          String?
+  weight          Float?
+  village         String
+  block           String
+  district        String
+  createdAt       DateTime       @default(now())
+  
+  ownerId         String
+  owner           User           @relation(fields: [ownerId], references: [id])
+  
+  healthReports   HealthReport[]
+  vaccinations    Vaccination[]
+  treatments      Treatment[]
+  cases           Case[]
+  samples         Sample[]
+}
+
+model HealthReport {
+  id                String    @id @default(cuid())
+  animalId          String
+  animal            Animal    @relation(fields: [animalId], references: [id])
+  reporterId        String
+  reporter          User      @relation("Reporter", fields: [reporterId], references: [id])
+  
+  temperature       Float?
+  duration          Int?      // In days
+  severity          String    @default("MILD") // MILD, MODERATE, SEVERE
+  animalsAffected   Int       @default(1)
+  deaths            Int       @default(0)
+  vaccinatedCount   Int       @default(0)
+  locationVillage   String
+  locationBlock     String
+  locationDistrict  String
+  latitude          Float?
+  longitude         Float?
+  additionalNotes   String?
+  imageUrl          String?
+  
+  riskScore         Int       @default(0)
+  riskLevel         String    @default("LOW") // LOW, MEDIUM, HIGH
+  riskFactors       String?   // JSON string or comma-separated
+  recommendedAction String?
+  
+  createdAt         DateTime  @default(now())
+  
+  symptoms          Symptom[]
+  cases             Case[]
+}
+
+model Symptom {
+  id             String       @id @default(cuid())
+  name           String
+  healthReportId String
+  healthReport   HealthReport @relation(fields: [healthReportId], references: [id])
+}
+
+model Vaccination {
+  id              String   @id @default(cuid())
+  animalId        String
+  animal          Animal   @relation(fields: [animalId], references: [id])
+  vaccine         String
+  date            DateTime
+  nextDueDate     DateTime?
+  veterinarianId  String?
+  location        String?
+  createdAt       DateTime @default(now())
+}
+
+model Case {
+  id              String        @id @default(cuid())
+  animalId        String
+  animal          Animal        @relation(fields: [animalId], references: [id])
+  healthReportId  String?
+  healthReport    HealthReport? @relation(fields: [healthReportId], references: [id])
+  veterinarianId  String?
+  veterinarian    User?         @relation("VetAssigned", fields: [veterinarianId], references: [id])
+  
+  status          String        @default("NEW") // NEW, UNDER_REVIEW, FIELD_VISIT, TREATMENT, LAB_TEST, RECOVERED, REFERRED, CLOSED
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  treatments      Treatment[]
+  samples         Sample[]
+  fieldVisits     FieldVisit[]
+}
+
+model Treatment {
+  id              String    @id @default(cuid())
+  caseId          String
+  case            Case      @relation(fields: [caseId], references: [id])
+  animalId        String
+  animal          Animal    @relation(fields: [animalId], references: [id])
+  
+  assessment      String
+  treatment       String
+  medication      String?
+  followUpDate    DateTime?
+  notes           String?
+  
+  createdAt       DateTime  @default(now())
+}
+
+model Sample {
+  id              String   @id @default(cuid())
+  caseId          String
+  case            Case     @relation(fields: [caseId], references: [id])
+  animalId        String
+  animal          Animal   @relation(fields: [animalId], references: [id])
+  
+  sampleType      String
+  collectionDate  DateTime @default(now())
+  collectedById   String
+  
+  laboratoryId    String?
+  laboratory      Laboratory? @relation(fields: [laboratoryId], references: [id])
+  labUserId       String?
+  labUser         User?    @relation("LabUser", fields: [labUserId], references: [id])
+  
+  status          String   @default("COLLECTED") // COLLECTED, SENT_TO_LAB, RECEIVED, TESTING, RESULT_AVAILABLE
+  result          String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Laboratory {
+  id              String   @id @default(cuid())
+  name            String
+  location        String
+  samples         Sample[]
+}
+
+model FieldVisit {
+  id              String   @id @default(cuid())
+  caseId          String
+  case            Case     @relation(fields: [caseId], references: [id])
+  fieldWorkerId   String
+  fieldWorker     User     @relation("FieldWorker", fields: [fieldWorkerId], references: [id])
+  
+  visitDate       DateTime @default(now())
+  findings        String
+  status          String   @default("COMPLETED")
+}
+
+model Alert {
+  id              String   @id @default(cuid())
+  type            String   // HIGH_RISK, OUTBREAK_WARNING, VACCINATION_DUE, MORTALITY_SPIKE, LAB_RESULT, FIELD_VISIT, FOLLOW_UP
+  message         String
+  village         String?
+  block           String?
+  district        String?
+  isRead          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+model Notification {
+  id              String   @id @default(cuid())
+  userId          String?
+  type            String
+  message         String
+  isRead          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+model AuditLog {
+  id              String   @id @default(cuid())
+  userId          String?
+  action          String
+  details         String
+  createdAt       DateTime @default(now())
+}

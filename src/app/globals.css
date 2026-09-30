@@ -1,0 +1,87 @@
+@import "https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;800&display=swap";
+@import "tailwindcss";
+
+:root {
+  --bg: #EEF2EA;
+  --card: #ffffff;
+  --ink: #16261B;
+  --mut: #5B6B5F;
+  --g: #2E7D46;
+  --gl: #DCEFE1;
+  --y: #E8A317;
+  --yl: #FBEFCF;
+  --r: #C8372D;
+  --rl: #F8DAD6;
+  --line: #D5DDD0;
+  --phone: #16261B;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1A12;
+    --card: #19271D;
+    --ink: #EAF2EA;
+    --mut: #9DB0A2;
+    --gl: #1E3D28;
+    --yl: #3D3212;
+    --rl: #45201D;
+    --line: #2A3D2F;
+    --phone: #050A06;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0F1A12;
+  --card: #19271D;
+  --ink: #EAF2EA;
+  --mut: #9DB0A2;
+  --gl: #1E3D28;
+  --yl: #3D3212;
+  --rl: #45201D;
+  --line: #2A3D2F;
+  --phone: #050A06;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Mukta', 'Noto Sans Devanagari', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: 0;
+  background: none;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--y);
+  outline-offset: 2px;
+}
+
+/* Custom scroll bar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--mut);
+}
