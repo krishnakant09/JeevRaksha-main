@@ -359,11 +359,22 @@ export default function HomeLandingPage() {
                 </Link>
 
                 <Link
+                  href="/farmer/ivr"
+                  className="p-4 rounded-2xl bg-[#DCEFE1] hover:bg-emerald-100 text-[#16261B] flex items-center justify-center gap-2 font-black text-sm shadow-md active:scale-[0.99] transition shrink-0 border-2 border-[#2E7D46]"
+                >
+                  <span className="text-2xl">📞</span>
+                  <div className="text-left">
+                    <span className="block leading-tight font-black">1800 IVR हेल्पलाइन</span>
+                    <span className="text-[10px] text-[#2E7D46] block font-bold">बिना इंटरनेट फोन कॉल</span>
+                  </div>
+                </Link>
+
+                <Link
                   href="/farmer/chat"
                   className="p-4 rounded-2xl bg-[#E8A317] hover:bg-[#D69312] text-[#16261B] flex items-center justify-center gap-2 font-black text-sm shadow-md active:scale-[0.99] transition shrink-0"
                 >
                   <span className="text-2xl">🎤</span>
-                  <span>AI आवाज सहायक (Voice Bot)</span>
+                  <span>AI आवाज सहायक</span>
                 </Link>
               </div>
 

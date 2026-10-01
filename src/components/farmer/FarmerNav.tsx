@@ -9,7 +9,8 @@ import {
   HeartPulse, 
   Home, 
   ShieldAlert,
-  Sparkles
+  Sparkles,
+  PhoneCall
 } from "lucide-react";
 
 interface FarmerNavProps {
@@ -34,6 +35,14 @@ export default function FarmerNav({ userName }: FarmerNavProps) {
       badge: "Fast Triage",
     },
     {
+      label: "IVR Helpline",
+      labelHi: "IVR हेल्पलाइन",
+      href: "/farmer/ivr",
+      icon: PhoneCall,
+      highlight: true,
+      badge: "1800 Free",
+    },
+    {
       label: "My Livestock",
       labelHi: "मेरे पशु",
       href: "/farmer/animals",
@@ -50,7 +59,6 @@ export default function FarmerNav({ userName }: FarmerNavProps) {
       labelHi: "AI चिकित्सक",
       href: "/farmer/chat",
       icon: Bot,
-      highlight: true,
     },
   ];
 
