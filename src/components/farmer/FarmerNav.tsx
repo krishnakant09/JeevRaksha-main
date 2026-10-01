@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { 
-  PlusCircle, 
-  FileText, 
-  Bot, 
-  LogOut, 
-  HeartPulse, 
-  Home, 
+import {
+  PlusCircle,
+  FileText,
+  Bot,
+  LogOut,
+  HeartPulse,
+  Home,
   ShieldAlert,
   Sparkles,
   PhoneCall
@@ -96,11 +96,10 @@ export default function FarmerNav({ userName }: FarmerNavProps) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
-                    isActive
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${isActive
                       ? "bg-white text-[#2E7D46] shadow-xs border border-[#D5DDD0]"
                       : "text-[#5B6B5F] hover:text-[#16261B] hover:bg-white/60"
-                  }`}
+                    }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? "text-[#2E7D46]" : "text-[#5B6B5F]"}`} />
                   <span>{item.label}</span>
@@ -144,9 +143,8 @@ export default function FarmerNav({ userName }: FarmerNavProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors ${
-                isActive ? "text-[#2E7D46] font-extrabold" : "text-[#5B6B5F] hover:text-[#16261B]"
-              }`}
+              className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors ${isActive ? "text-[#2E7D46] font-extrabold" : "text-[#5B6B5F] hover:text-[#16261B]"
+                }`}
             >
               <div className={`p-1 rounded-full ${isActive ? "bg-[#DCEFE1]" : ""}`}>
                 <Icon className={`w-5 h-5 ${isActive ? "text-[#2E7D46]" : "text-[#5B6B5F]"}`} />
