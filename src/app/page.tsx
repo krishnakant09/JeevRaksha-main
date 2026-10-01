@@ -206,8 +206,122 @@ export default function HomeLandingPage() {
           }}
         />
 
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10 pt-4">
-          {/* Hero Left Content */}
+        <div className="max-w-6xl mx-auto relative z-10 pt-2">
+          {/* ── 3 PRIMARY ENTRY BUTTONS (LESS-EDUCATED ACCESSIBILITY & RAPID ACCESS) ── */}
+          <div className="mb-10 bg-black/20 backdrop-blur-md p-4 sm:p-6 rounded-3xl border border-white/20 shadow-2xl">
+            <div className="flex items-center justify-between flex-wrap gap-2 mb-4 pb-3 border-b border-white/10">
+              <div className="flex items-center gap-2.5">
+                <span className="w-3.5 h-3.5 rounded-full bg-[#E8A317] animate-pulse" />
+                <h2 className="text-base sm:text-lg font-black text-[#FBEFCF] tracking-wide uppercase">
+                  ⚡ अपना पोर्टल चुनें • Select Your Portal
+                </h2>
+              </div>
+              <span className="text-xs text-white/90 font-bold bg-white/10 px-3 py-1 rounded-full border border-white/15">
+                सीधे काम के लिए नीचे 1, 2 या 3 नंबर पर टच करें
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* 1. FARMER PORTAL */}
+              <Link
+                href="/farmer/report"
+                className="group relative bg-[#F2F9F4] hover:bg-white text-[#16261B] rounded-2xl p-5 border-4 border-[#2E7D46] shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-1 flex flex-col justify-between active:scale-[0.98]"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-4xl p-2.5 rounded-2xl bg-[#DCEFE1] inline-block shadow-sm group-hover:scale-110 transition-transform">
+                      🌾🐄
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-[#2E7D46] text-white text-xs font-black tracking-wider uppercase shadow-sm">
+                      विकल्प 1 • FARMER
+                    </span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-[#16261B] group-hover:text-[#2E7D46] transition-colors">
+                    किसान पोर्टल
+                  </h3>
+                  <p className="text-sm font-bold text-[#2E7D46] mt-0.5">
+                    Farmer Portal
+                  </p>
+                  <p className="text-xs text-[#354839] font-semibold mt-2 leading-relaxed">
+                    पशु बीमार है? डॉक्टर बुलाएं, लक्षण दर्ज करें या AI सहायता से तुरंत सलाह लें।
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-[#D5DDD0] flex items-center justify-between text-xs font-black text-[#2E7D46]">
+                  <span className="bg-[#DCEFE1] px-2.5 py-1 rounded-lg">प्रवेश करें (Report)</span>
+                  <span className="w-8 h-8 rounded-xl bg-[#2E7D46] text-white flex items-center justify-center font-black group-hover:translate-x-1 transition-transform">
+                    ➔
+                  </span>
+                </div>
+              </Link>
+
+              {/* 2. VET PORTAL */}
+              <Link
+                href="/dashboard/cases"
+                className="group relative bg-[#FFFDF5] hover:bg-white text-[#16261B] rounded-2xl p-5 border-4 border-[#E8A317] shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-1 flex flex-col justify-between active:scale-[0.98]"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-4xl p-2.5 rounded-2xl bg-[#FBEFCF] inline-block shadow-sm group-hover:scale-110 transition-transform">
+                      🩺👨‍⚕️
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-[#E8A317] text-[#16261B] text-xs font-black tracking-wider uppercase shadow-sm">
+                      विकल्प 2 • VET
+                    </span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-[#16261B] group-hover:text-[#B87E0E] transition-colors">
+                    डॉक्टर पोर्टल
+                  </h3>
+                  <p className="text-sm font-bold text-[#B87E0E] mt-0.5">
+                    Veterinary Doctor
+                  </p>
+                  <p className="text-xs text-[#354839] font-semibold mt-2 leading-relaxed">
+                    मरीज़ केस देखें, इमरजेंसी स्वीकार करें, दवा व इलाज का पर्चा (Rx) बनाएं।
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-[#D5DDD0] flex items-center justify-between text-xs font-black text-[#B87E0E]">
+                  <span className="bg-[#FBEFCF] px-2.5 py-1 rounded-lg">केस देखें (Cases)</span>
+                  <span className="w-8 h-8 rounded-xl bg-[#E8A317] text-[#16261B] flex items-center justify-center font-black group-hover:translate-x-1 transition-transform">
+                    ➔
+                  </span>
+                </div>
+              </Link>
+
+              {/* 3. ADMIN PORTAL */}
+              <Link
+                href="/dashboard"
+                className="group relative bg-[#F7F9FB] hover:bg-white text-[#16261B] rounded-2xl p-5 border-4 border-[#16261B] shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-1 flex flex-col justify-between active:scale-[0.98]"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-4xl p-2.5 rounded-2xl bg-[#EEF2EA] inline-block shadow-sm group-hover:scale-110 transition-transform">
+                      🛡️📊
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-[#16261B] text-white text-xs font-black tracking-wider uppercase shadow-sm">
+                      विकल्प 3 • ADMIN
+                    </span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-[#16261B] group-hover:text-black transition-colors">
+                    एडमिन पोर्टल
+                  </h3>
+                  <p className="text-sm font-bold text-[#16261B] mt-0.5">
+                    Admin / Officer
+                  </p>
+                  <p className="text-xs text-[#354839] font-semibold mt-2 leading-relaxed">
+                    रोग निगरानी नक्शा, जिले के आंकड़े, आउटब्रेक चेतावनी व समग्र नियंत्रण ग्रिड।
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-[#D5DDD0] flex items-center justify-between text-xs font-black text-[#16261B]">
+                  <span className="bg-[#EEF2EA] px-2.5 py-1 rounded-lg">डैशबोर्ड खोलें (Grid)</span>
+                  <span className="w-8 h-8 rounded-xl bg-[#16261B] text-white flex items-center justify-center font-black group-hover:translate-x-1 transition-transform">
+                    ➔
+                  </span>
+                </div>
+              </Link>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-2">
+            {/* Hero Left Content */}
           <div className="lg:col-span-7 space-y-5">
             {/* Live Indicator Pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-black/25 backdrop-blur-md rounded-full border border-white/20 text-xs font-bold">
@@ -330,7 +444,8 @@ export default function HomeLandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* ── LIVE STATS TICKER ── */}
       <section className="bg-white border-b border-[#D5DDD0] py-6 px-4 sm:px-8">
