@@ -90,6 +90,11 @@ export default function CasesList({ initialCases }: { initialCases: any[] }) {
                     {c.healthReport.riskLevel} RISK
                   </span>
                 )}
+                {c.healthReport?.imageUrl && (
+                  <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-purple-100 text-purple-700 border border-purple-200 flex items-center gap-1">
+                    📷 Photo Attached
+                  </span>
+                )}
               </div>
               
               <p className="text-sm text-gray-500 mt-2 flex items-center gap-1.5 font-medium">
@@ -104,6 +109,37 @@ export default function CasesList({ initialCases }: { initialCases: any[] }) {
                 <p className="text-sm text-gray-600 mt-2 bg-gray-50 inline-block px-3 py-1.5 rounded-lg border border-gray-100">
                   <span className="font-semibold text-gray-700">Symptoms:</span> {c.healthReport.symptoms.map((s: any) => s.name).join(", ")}
                 </p>
+              )}
+
+              {c.healthReport?.imageUrl && (
+                <div className="mt-3 p-3 bg-purple-50/70 rounded-xl border border-purple-100 space-y-2">
+                  <span className="text-[11px] font-black text-purple-800 uppercase tracking-wider block">
+                    📷 Farmer Injury Photo & AI Vision Triage:
+                  </span>
+                  <div className="flex items-center gap-3">
+                    {c.healthReport.imageUrl === "sample_wound_photo" ? (
+                      <div className="w-20 h-16 rounded-lg bg-white border border-purple-200 flex items-center justify-center text-3xl shadow-xs" title="Sample Trauma Wound">
+                        🐃🩹
+                      </div>
+                    ) : c.healthReport.imageUrl.startsWith("data:") ? (
+                      <img
+                        src={c.healthReport.imageUrl}
+                        alt="Uploaded Injury"
+                        className="w-24 h-20 object-cover rounded-lg border border-purple-200 shadow-xs"
+                      />
+                    ) : null}
+                    <div className="text-xs text-gray-700 space-y-0.5">
+                      <p className="font-bold text-purple-950">
+                        {c.healthReport.additionalNotes || "Open wound on leg with localized swelling."}
+                      </p>
+                      {c.healthReport.recommendedAction && (
+                        <p className="text-gray-500">
+                          <b>First-aid guidance given:</b> {c.healthReport.recommendedAction}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
             

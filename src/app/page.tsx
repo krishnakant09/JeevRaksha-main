@@ -124,7 +124,7 @@ export default function HomeLandingPage() {
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-lg font-black tracking-tight text-[#16261B]">Pashu Rakshak</span>
+              <span className="text-lg font-black tracking-tight text-[#16261B]">Jeev Rakshak</span>
               <span className="text-[10px] font-extrabold uppercase tracking-wider bg-[#DCEFE1] text-[#2E7D46] px-2 py-0.5 rounded-full">
                 Surveillance Grid
               </span>
@@ -370,16 +370,19 @@ export default function HomeLandingPage() {
                 </Link>
 
                 <Link
-                  href="/farmer/chat"
-                  className="p-4 rounded-2xl bg-[#E8A317] hover:bg-[#D69312] text-[#16261B] flex items-center justify-center gap-2 font-black text-sm shadow-md active:scale-[0.99] transition shrink-0"
+                  href="/farmer/photo-detect"
+                  className="p-4 rounded-2xl bg-[#E8A317] hover:bg-[#D69312] text-[#16261B] flex items-center justify-center gap-2.5 font-black text-sm shadow-md active:scale-[0.99] transition shrink-0 border-2 border-[#B87E0E]"
                 >
-                  <span className="text-2xl">🎤</span>
-                  <span>AI आवाज सहायक</span>
+                  <span className="text-2xl">📷</span>
+                  <div className="text-left">
+                    <span className="block leading-tight font-black">चोट की फोटो से जांच</span>
+                    <span className="text-[10px] text-[#16261B]/80 block font-bold">AI घाव व रोग विश्लेषण</span>
+                  </div>
                 </Link>
               </div>
 
               <div className="flex items-center justify-between text-xs text-white/80 px-1 pt-1 font-medium">
-                <span>✓ स्थानीय भाषा में बोलकर बताएं</span>
+                <span>✓ कैमरे से फोटो द्वारा त्वरित जांच</span>
                 <span>✓ 24x7 पशु चिकित्सा सलाह</span>
                 <span>✓ निःशुल्क पंजीकरण</span>
               </div>

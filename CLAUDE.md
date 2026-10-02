@@ -87,11 +87,45 @@ Designed for rural farmers who have basic keypad feature phones (2G/no internet)
 
 ---
 
+### 5. AI Photo Detection & Wound Triage (from `photo detect.md`)
+Replaced the old AI Voice assistant button on the home page with a dedicated camera photo inspection feature for livestock injuries and wounds.
+
+#### A. Interactive Photo Triage Page
+- **Route:** `/farmer/photo-detect` (`src/app/farmer/photo-detect/page.tsx`)
+- **Key Capabilities:**
+  - Real device camera capture (`capture="environment"`) and image file upload.
+  - "नमूना फोटो इस्तेमाल करें (Demo)" button for instant 1-click preview without needing an image file.
+  - 2-second realistic AI vision scan animation with laser line scanning the injury.
+  - **Clinical AI Result Display:**
+    - Urgency badge (`⚠️ आज डॉक्टर को दिखाएं / See a vet today`).
+    - Observation text in Hindi and English.
+    - **🔊 आवाज में सुनें (Listen):** Spoken Hindi audio readout using `window.speechSynthesis` (`hi-IN`).
+    - **✅ अभी यह करें (Do this now):** Gently wash with water, cover with clean cloth, keep dry.
+    - **⛔ यह कतई न करें (Avoid):** Do not apply mud, ash, or home remedies.
+    - **📞 तुरंत डॉक्टर बुलाएं अगर:** Warning triggers (maggots, heavy bleeding, fever).
+  - Direct CTA button: **"🩺 फोटो के साथ डॉक्टर बुलाएं (Request Vet With Photo)"** to automatically save the case in the database.
+
+#### B. Backend API Route
+- **Endpoint:** `POST /api/photo-detect` (`src/app/api/photo-detect/route.ts`)
+- Stores image in `HealthReport.imageUrl`, saves AI analysis in `additionalNotes`, creates symptoms and a new `Case` in Prisma DB.
+
+#### C. Vet Portal Integration
+- In `src/app/dashboard/cases/CasesList.tsx`, cases submitted with photos now show a `📷 Photo Attached` badge, the photo thumbnail, and the AI clinical note card for veterinarian review.
+
+#### D. Home Page & Navigation Integration
+- **Home Page Hero Box:** Replaced the "AI आवाज सहायक" button with **"📷 चोट की फोटो से जांच (AI घाव व रोग विश्लेषण)"** (`/farmer/photo-detect`).
+- **Farmer Navigation:** Added **"फोटो से जांच"** to `FarmerNav.tsx`.
+
+---
+
 ## 📁 Key File Map
 
 | Path | Description |
 | :--- | :--- |
-| `src/app/page.tsx` | Main landing page with 3 prominent portal buttons & emergency IVR CTA |
+| `src/app/page.tsx` | Main landing page with 3 portal cards, IVR helpline, and Photo Detect CTA |
+| `src/app/farmer/photo-detect/page.tsx` | AI photo detection page for livestock wound triage |
+| `src/app/api/photo-detect/route.ts` | Backend intake API for analyzing photos and creating cases |
+| `src/app/dashboard/cases/CasesList.tsx` | Vet case list showing attached photos and AI triage summaries |
 | `src/app/farmer/report/page.tsx` | 4-step disease reporting wizard with species-filtered outbreak presets |
 | `src/app/farmer/ivr/page.tsx` | Interactive In-Browser IVR Phone Simulator with Hindi voice prompts |
 | `src/app/api/ivr/simulate/route.ts` | Backend intake API for creating cases from IVR calls |
@@ -99,3 +133,4 @@ Designed for rural farmers who have basic keypad feature phones (2G/no internet)
 | `src/components/farmer/FarmerNav.tsx` | Farmer portal header and mobile bottom navigation |
 | `src/app/globals.css` | Mukta/Noto Sans fonts and Pashu Rakshak color tokens |
 | `prisma/schema.prisma` | Database schema (User, Animal, HealthReport, Symptom, Case, Alert) |
+

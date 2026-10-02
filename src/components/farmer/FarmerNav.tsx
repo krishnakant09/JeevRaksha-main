@@ -10,7 +10,8 @@ import {
   Home,
   ShieldAlert,
   Sparkles,
-  PhoneCall
+  PhoneCall,
+  Camera
 } from "lucide-react";
 
 interface FarmerNavProps {
@@ -35,11 +36,18 @@ export default function FarmerNav({ userName }: FarmerNavProps) {
       badge: "Fast Triage",
     },
     {
+      label: "Photo Triage",
+      labelHi: "फोटो से जांच",
+      href: "/farmer/photo-detect",
+      icon: Camera,
+      highlight: true,
+      badge: "AI Vision",
+    },
+    {
       label: "IVR Helpline",
       labelHi: "IVR हेल्पलाइन",
       href: "/farmer/ivr",
       icon: PhoneCall,
-      highlight: true,
       badge: "1800 Free",
     },
     {
@@ -53,12 +61,6 @@ export default function FarmerNav({ userName }: FarmerNavProps) {
       labelHi: "मेरी रिपोर्ट",
       href: "/farmer/my-issues",
       icon: FileText,
-    },
-    {
-      label: "AI Voice Doctor",
-      labelHi: "AI चिकित्सक",
-      href: "/farmer/chat",
-      icon: Bot,
     },
   ];
 
