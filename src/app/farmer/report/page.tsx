@@ -22,7 +22,11 @@ import {
   CheckCircle2,
   Stethoscope,
   Activity,
-  FileCheck
+  FileCheck,
+  Volume2,
+  X,
+  Radio,
+  Wand2
 } from "lucide-react";
 import FarmerNav from "@/components/farmer/FarmerNav";
 
@@ -316,13 +320,19 @@ export default function ReportPage() {
   const [step, setStep] = useState<number>(1);
 
   // Voice & AI states
-  const [isListeningDraft, setIsListeningDraft] = useState(false);
-  const [draftText, setDraftText] = useState("");
-  const [drafting, setDrafting] = useState(false);
   const [isListeningSymptoms, setIsListeningSymptoms] = useState(false);
   const [aiSymptomText, setAiSymptomText] = useState("");
   const [analyzingSymptoms, setAnalyzingSymptoms] = useState(false);
   const [isListeningNotes, setIsListeningNotes] = useState(false);
+
+  // Dedicated Voice Form Assistant States
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
+  const [voiceLang, setVoiceLang] = useState<"hi" | "mr" | "en">("hi");
+  const [isListeningVoice, setIsListeningVoice] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState("");
+  const [isProcessingVoice, setIsProcessingVoice] = useState(false);
+  const [voiceExtractedData, setVoiceExtractedData] = useState<any>(null);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
 
   // Form State
   const [form, setForm] = useState({
@@ -425,66 +435,121 @@ export default function ReportPage() {
     );
   }, [currentNormalizedSpecies]);
 
-  // Speech Recognition for AI Draft
-  const startListeningDraft = () => {
+  // Dedicated Voice Form Assistant Handlers
+  const startVoiceInput = () => {
+    setVoiceError(null);
     const SpeechRecognition =
       typeof window !== "undefined"
         ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
         : null;
     if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in this browser. Please type below.");
+      setVoiceError("Speech recognition is not supported in this browser. You can click any sample speech below or type directly.");
       return;
     }
-    const recognition = new SpeechRecognition();
-    recognition.lang = "hi-IN";
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = voiceLang === "mr" ? "mr-IN" : voiceLang === "hi" ? "hi-IN" : "en-IN";
+      recognition.continuous = false;
+      recognition.interimResults = true;
 
-    recognition.onstart = () => setIsListeningDraft(true);
-    recognition.onresult = (e: any) => {
-      const transcript = e.results[0][0].transcript;
-      setDraftText((prev) => (prev ? prev + " " + transcript : transcript));
-    };
-    recognition.onerror = (e: any) => {
+      recognition.onstart = () => {
+        setIsListeningVoice(true);
+      };
+
+      recognition.onresult = (e: any) => {
+        let currentText = "";
+        for (let i = 0; i < e.results.length; i++) {
+          currentText += e.results[i][0].transcript;
+        }
+        setVoiceTranscript(currentText);
+      };
+
+      recognition.onerror = (e: any) => {
+        console.error("Speech error:", e);
+        setIsListeningVoice(false);
+        if (e.error === "not-allowed") {
+          setVoiceError("Microphone access was denied. Please allow microphone permission or click the quick demo buttons below.");
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListeningVoice(false);
+      };
+
+      recognition.start();
+    } catch (e) {
       console.error(e);
-      setIsListeningDraft(false);
-    };
-    recognition.onend = () => setIsListeningDraft(false);
-    recognition.start();
+      setIsListeningVoice(false);
+    }
   };
 
-  // AI Auto-Draft Execution
-  const autoDraftReport = async () => {
-    if (!draftText.trim()) return;
-    setDrafting(true);
+  const processVoiceText = async (textToProcess: string) => {
+    if (!textToProcess.trim()) return;
+    setIsProcessingVoice(true);
+    setVoiceError(null);
     try {
       const predefinedSymptoms = SYMPTOM_DEFINITIONS.map((s) => s.id);
       const res = await fetch("/api/draft-report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: draftText, predefinedSymptoms }),
+        body: JSON.stringify({ text: textToProcess, predefinedSymptoms }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        setForm((f) => ({
-          ...f,
-          symptoms: data.symptoms && data.symptoms.length > 0 ? data.symptoms : f.symptoms,
-          severity: data.severity || f.severity,
-          animalsAffected: data.animalsAffected !== undefined ? data.animalsAffected : f.animalsAffected,
-          deaths: data.deaths !== undefined ? data.deaths : f.deaths,
-          locationVillage: data.locationVillage || f.locationVillage,
-          additionalNotes: data.additionalNotes || f.additionalNotes,
-        }));
-        // If drafted successfully, advance to step 2 so user can review visually
-        setStep(2);
-      } else {
-        alert("Could not automatically parse the issue. Please continue step-by-step.");
-      }
-    } catch (e) {
-      console.error(e);
-      alert("Error reaching AI service.");
+      if (!res.ok) throw new Error("Failed to extract data");
+      const data = await res.json();
+      setVoiceExtractedData(data);
+    } catch (err: any) {
+      console.error(err);
+      setVoiceError("Could not process voice input. Please try again.");
+    } finally {
+      setIsProcessingVoice(false);
     }
-    setDrafting(false);
+  };
+
+  const applyVoiceDataToForm = () => {
+    if (!voiceExtractedData) return;
+    
+    // 1. Match animal by species if possible
+    let targetAnimal = animals.find((a) => 
+      a.species.toLowerCase() === (voiceExtractedData.species || "").toLowerCase()
+    );
+    if (!targetAnimal && animals.length > 0) {
+      targetAnimal = animals[0];
+    }
+
+    setForm((f) => ({
+      ...f,
+      animalId: targetAnimal ? targetAnimal.id : f.animalId,
+      symptoms: voiceExtractedData.symptoms && voiceExtractedData.symptoms.length > 0 ? voiceExtractedData.symptoms : f.symptoms,
+      severity: (voiceExtractedData.severity || f.severity) as "MILD" | "MODERATE" | "SEVERE",
+      animalsAffected: voiceExtractedData.animalsAffected || f.animalsAffected,
+      deaths: voiceExtractedData.deaths !== undefined ? voiceExtractedData.deaths : f.deaths,
+      duration: voiceExtractedData.duration ? String(voiceExtractedData.duration) : f.duration,
+      temperature: voiceExtractedData.temperature ? String(voiceExtractedData.temperature) : f.temperature,
+      locationVillage: voiceExtractedData.locationVillage || targetAnimal?.village || f.locationVillage,
+      locationBlock: targetAnimal?.block || f.locationBlock,
+      locationDistrict: targetAnimal?.district || f.locationDistrict,
+      additionalNotes: voiceExtractedData.additionalNotes || f.additionalNotes,
+    }));
+
+    // Voice confirmation speak back
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      try {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(
+          voiceLang === "mr" 
+            ? "तुमचा फॉर्म भरला आहे. कृपया तपासा आणि पुष्टी करा." 
+            : "फॉर्म भर दिया गया है! कृपया जांचें और पुष्टि करें।"
+        );
+        msg.lang = voiceLang === "mr" ? "mr-IN" : "hi-IN";
+        window.speechSynthesis.speak(msg);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    setIsVoiceModalOpen(false);
+    // Smoothly jump to Step 4 (Review) so farmer can see everything filled
+    setStep(4);
   };
 
   // Voice symptom matcher
@@ -802,65 +867,14 @@ export default function ReportPage() {
             </p>
           </div>
 
-          <Link
-            href="/farmer/my-issues"
-            className="self-start sm:self-auto text-xs font-bold text-violet-700 hover:text-violet-900 bg-white px-3 py-1.5 rounded-lg border border-violet-100 shadow-xs flex items-center gap-1"
-          >
-            <span>My Past Reports</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        {/* AI Quick Voice Assistant Card */}
-        <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-700 rounded-2xl p-4 sm:p-5 text-white shadow-lg mb-6 relative overflow-hidden">
-          <div className="absolute -right-10 -bottom-10 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-          
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-amber-300" />
-              </div>
-              <div>
-                <h3 className="font-extrabold text-sm sm:text-base tracking-tight">
-                  Voice Auto-Draft Assistant (बोलकर भरें)
-                </h3>
-                <p className="text-violet-100 text-xs mt-0.5">
-                  Speak your animal's illness in Hindi or English — AI fills the wizard for you!
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-3.5 flex gap-2">
-            <button
-              type="button"
-              onClick={startListeningDraft}
-              className={`p-3 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                isListeningDraft
-                  ? "bg-red-500 text-white animate-pulse ring-4 ring-red-300"
-                  : "bg-white text-violet-700 hover:bg-violet-50 active:scale-95"
-              }`}
-              title="Speak in Hindi/English"
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/farmer/my-issues"
+              className="self-start sm:self-auto text-xs font-bold text-violet-700 hover:text-violet-900 bg-white px-3 py-2 rounded-xl border border-violet-100 shadow-xs flex items-center gap-1"
             >
-              {isListeningDraft ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-            </button>
-
-            <input
-              type="text"
-              value={draftText}
-              onChange={(e) => setDraftText(e.target.value)}
-              placeholder="उदाहरण: मेरी 2 गायों को तेज़ बुखार और खुर में छाले हैं..."
-              className="flex-1 px-4 py-2.5 rounded-xl bg-white/95 text-gray-900 placeholder:text-gray-400 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-amber-300 transition"
-            />
-
-            <button
-              type="button"
-              onClick={autoDraftReport}
-              disabled={drafting || !draftText.trim()}
-              className="px-4 py-2.5 bg-amber-400 hover:bg-amber-300 text-gray-950 font-bold text-xs sm:text-sm rounded-xl transition disabled:opacity-50 shrink-0 shadow-sm flex items-center gap-1.5"
-            >
-              {drafting ? "Drafting..." : "Auto-Fill"}
-            </button>
+              <span>Past Reports</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
 
@@ -947,6 +961,39 @@ export default function ReportPage() {
                 <Plus className="w-3.5 h-3.5" />
                 <span>+ New Animal</span>
               </Link>
+            </div>
+
+            {/* Quick Voice Assistant Callout */}
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-green-50 border border-emerald-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center shrink-0 shadow-md shadow-emerald-600/20">
+                  <Mic className="w-5 h-5 text-amber-200" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-emerald-950 flex items-center gap-1.5">
+                    <span>बोलकर 10 सेकंड में पूरा फॉर्म भरें</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-200/70 text-emerald-800 px-2 py-0.5 rounded-full">
+                      Voice AI
+                    </span>
+                  </h3>
+                  <p className="text-xs text-emerald-700 font-medium mt-0.5">
+                    हिंदी, मराठी किंवा English मध्ये सांगा — AI पशु, लक्षणे आणि ठिकाण स्वतः भरेल.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsVoiceModalOpen(true);
+                  setVoiceTranscript("");
+                  setVoiceExtractedData(null);
+                  setVoiceError(null);
+                }}
+                className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shrink-0 transition active:scale-95 shadow-md shadow-emerald-600/20 flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <span>आवाजाने भरा (Fill with Voice)</span>
+              </button>
             </div>
 
             {animals.length === 0 ? (
@@ -1741,6 +1788,251 @@ export default function ReportPage() {
           </div>
         </div>
       </main>
+
+      {/* ── VOICE ASSISTANT MODAL ── */}
+      {isVoiceModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 relative overflow-hidden space-y-5">
+            {/* Top Header */}
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/20">
+                  <Mic className="w-5 h-5 text-amber-200" />
+                </div>
+                <div>
+                  <h3 className="font-black text-base text-gray-900 leading-tight">
+                    Voice Form Assistant (बोलकर फॉर्म भरें)
+                  </h3>
+                  <p className="text-[11px] text-gray-500 font-semibold">
+                    Hands-free multilingual intake • हिन्दी • मराठी • English
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsVoiceModalOpen(false);
+                  setIsListeningVoice(false);
+                }}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Language Selector */}
+            <div className="flex items-center justify-between gap-2 p-1.5 bg-gray-100/80 rounded-2xl">
+              {[
+                { code: "hi", label: "हिन्दी (Hindi)", flag: "🇮🇳" },
+                { code: "mr", label: "मराठी (Marathi)", flag: "🚩" },
+                { code: "en", label: "English", flag: "🌐" },
+              ].map((lang) => (
+                <button
+                  key={lang.code}
+                  type="button"
+                  onClick={() => setVoiceLang(lang.code as any)}
+                  className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                    voiceLang === lang.code
+                      ? "bg-white text-emerald-800 shadow-sm"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  <span className="mr-1">{lang.flag}</span>
+                  <span>{lang.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Pulsing Mic Circle */}
+            <div className="py-4 text-center space-y-3">
+              <div className="relative inline-flex items-center justify-center">
+                {isListeningVoice && (
+                  <span className="absolute w-28 h-28 rounded-full bg-red-500/20 animate-ping pointer-events-none" />
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isListeningVoice) {
+                      setIsListeningVoice(false);
+                    } else {
+                      startVoiceInput();
+                    }
+                  }}
+                  className={`w-20 h-20 rounded-full flex items-center justify-center text-white shadow-xl transition-all active:scale-90 cursor-pointer ${
+                    isListeningVoice
+                      ? "bg-gradient-to-tr from-red-600 to-rose-500 shadow-red-500/40 ring-4 ring-red-200 animate-pulse"
+                      : "bg-gradient-to-tr from-emerald-600 via-teal-600 to-green-600 shadow-emerald-600/30 hover:scale-105"
+                  }`}
+                >
+                  {isListeningVoice ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8 text-amber-200" />}
+                </button>
+              </div>
+
+              <div>
+                <p className="text-sm font-extrabold text-gray-900">
+                  {isListeningVoice
+                    ? "🔴 सुन रहे हैं... अभी बोलिए (Listening...)"
+                    : isProcessingVoice
+                    ? "⏳ AI विवरण निकाल रहा है... (Extracting...)"
+                    : "माइक बटन दबाएं और पशु की बीमारी बताएं"}
+                </p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  जैसे: "मेरी 2 गायों को 3 दिन से तेज बुखार है, मुंह से लार गिर रही है, गांव वाघोली"
+                </p>
+              </div>
+            </div>
+
+            {/* Error Message if any */}
+            {voiceError && (
+              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 font-semibold flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <span>{voiceError}</span>
+              </div>
+            )}
+
+            {/* Live Transcript / Input Area */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold uppercase tracking-wider text-gray-400 flex items-center justify-between">
+                <span>बोले गए शब्द (Transcript):</span>
+                {voiceTranscript && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setVoiceTranscript("");
+                      setVoiceExtractedData(null);
+                    }}
+                    className="text-gray-400 hover:text-gray-600 text-[10px] font-bold cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                )}
+              </label>
+              <textarea
+                rows={3}
+                value={voiceTranscript}
+                onChange={(e) => setVoiceTranscript(e.target.value)}
+                placeholder="यहाँ आपकी आवाज़ के शब्द दिखाई देंगे, या आप सीधे टाइप भी कर सकते हैं..."
+                className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-200 text-xs sm:text-sm text-gray-800 outline-none focus:ring-2 focus:ring-emerald-500 font-medium transition resize-none"
+              />
+            </div>
+
+            {/* Quick 1-Tap Demo Voice Simulation Buttons */}
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+                या तुरंत डेमो परीक्षण के लिए चुनें (Quick Demo Simulation):
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const sample = "मेरी 2 गायों को 3 दिन से तेज बुखार है और मुंह से लार गिर रही है, गांव वाघोली";
+                    setVoiceTranscript(sample);
+                    processVoiceText(sample);
+                  }}
+                  className="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-semibold transition border border-emerald-200/60 cursor-pointer"
+                >
+                  🐮 हिन्दी: 2 गाय, तेज बुखार, लार, वाघोली
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const sample = "1 म्हैस आजारी आहे, पायाला जखम आणि चालता येत नाही, गाव उरुळी कांचन";
+                    setVoiceTranscript(sample);
+                    processVoiceText(sample);
+                  }}
+                  className="px-2.5 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 text-[11px] font-semibold transition border border-teal-200/60 cursor-pointer"
+                >
+                  🐃 मराठी: 1 म्हैस, जखम, लंगडत, उरुळी कांचन
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const sample = "Three cows have severe fever and blisters for 2 days in Shirwal";
+                    setVoiceTranscript(sample);
+                    processVoiceText(sample);
+                  }}
+                  className="px-2.5 py-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-800 text-[11px] font-semibold transition border border-purple-200/60 cursor-pointer"
+                >
+                  🌐 English: 3 cows, fever & blisters, Shirwal
+                </button>
+              </div>
+            </div>
+
+            {/* Extracted Details Preview Card */}
+            {voiceExtractedData && (
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2.5 animate-in fade-in duration-150">
+                <div className="flex items-center justify-between text-xs font-black text-emerald-900">
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>AI द्वारा निकाले गए विवरण (Extracted Fields):</span>
+                  </span>
+                  <span className="text-[10px] bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
+                    Ready to Apply
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-2 rounded-xl bg-white border border-emerald-100">
+                    <span className="text-[10px] text-gray-400 font-bold block uppercase">पशु (Species)</span>
+                    <span className="font-extrabold text-gray-800">{voiceExtractedData.species || "Cow"}</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white border border-emerald-100">
+                    <span className="text-[10px] text-gray-400 font-bold block uppercase">गंभीरता (Severity)</span>
+                    <span className={`font-black ${
+                      voiceExtractedData.severity === "SEVERE" ? "text-red-600" : "text-amber-600"
+                    }`}>
+                      {voiceExtractedData.severity}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white border border-emerald-100">
+                    <span className="text-[10px] text-gray-400 font-bold block uppercase">संख्या (Affected)</span>
+                    <span className="font-extrabold text-gray-800">{voiceExtractedData.animalsAffected || 1} पशु ({voiceExtractedData.duration || 2} दिन)</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white border border-emerald-100">
+                    <span className="text-[10px] text-gray-400 font-bold block uppercase">गांव (Village)</span>
+                    <span className="font-extrabold text-gray-800">{voiceExtractedData.locationVillage || "Auto Selected"}</span>
+                  </div>
+                </div>
+
+                <div className="p-2 rounded-xl bg-white border border-emerald-100">
+                  <span className="text-[10px] text-gray-400 font-bold block uppercase mb-1">पहचाने गए लक्षण (Symptoms)</span>
+                  <div className="flex flex-wrap gap-1">
+                    {(voiceExtractedData.symptoms || []).map((s: string, idx: number) => (
+                      <span key={idx} className="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-900 font-bold text-[11px]">
+                        ✓ {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Bottom Actions */}
+            <div className="flex items-center gap-2 pt-1">
+              {!voiceExtractedData ? (
+                <button
+                  type="button"
+                  onClick={() => processVoiceText(voiceTranscript)}
+                  disabled={!voiceTranscript.trim() || isProcessingVoice}
+                  className="flex-1 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-200" />
+                  <span>{isProcessingVoice ? "AI निकाल रहा है..." : "विवरण निकालें (Extract Details)"}</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={applyVoiceDataToForm}
+                  className="flex-1 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs sm:text-sm shadow-lg shadow-emerald-600/30 transition active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <CheckCircle2 className="w-5 h-5 text-amber-300" />
+                  <span>पूरा फॉर्म भरें और पुष्टि करें (Fill Form & Review) →</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

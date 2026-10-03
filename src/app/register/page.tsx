@@ -58,7 +58,7 @@ export default function RegisterPage() {
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
         {/* Header */}
         <div className="bg-violet-700 px-8 py-6 text-white text-center">
-          <h1 className="text-3xl font-extrabold tracking-tight">JeevRaksha</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">Jeev Rakshak</h1>
           <p className="text-violet-200 text-sm mt-1">Create an Account</p>
         </div>
 

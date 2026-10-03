@@ -166,8 +166,14 @@ export default function ChatFAB() {
     setLoading(false);
   };
 
-  // Hide AI Vet Assistant on homepage, or if not logged in as a FARMER
-  if (pathname === "/" || pathname === "/farmer/chat" || !user || user.role !== "FARMER") {
+  // Hide AI Vet Assistant on homepage, farmer report page, dedicated chat page, or if not logged in as a FARMER
+  if (
+    pathname === "/" ||
+    pathname === "/farmer/chat" ||
+    pathname.startsWith("/farmer/report") ||
+    !user ||
+    user.role !== "FARMER"
+  ) {
     return null;
   }
 
