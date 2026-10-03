@@ -1,8 +1,10 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { Mic, MicOff, Send, Volume2, Image as ImageIcon, X, Bot } from "lucide-react";
 
 export default function ChatFAB() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [input, setInput] = useState("");
@@ -21,13 +23,17 @@ export default function ChatFAB() {
     const checkUser = () => {
       const stored = localStorage.getItem("jeevraksha_user");
       if (stored) {
-        setUser(JSON.parse(stored));
+        try {
+          setUser(JSON.parse(stored));
+        } catch {
+          setUser(null);
+        }
       } else {
         setUser(null);
       }
     };
     checkUser();
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (isOpen) {
@@ -159,6 +165,11 @@ export default function ChatFAB() {
     
     setLoading(false);
   };
+
+  // Hide AI Vet Assistant on homepage, or if not logged in as a FARMER
+  if (pathname === "/" || pathname === "/farmer/chat" || !user || user.role !== "FARMER") {
+    return null;
+  }
 
   // Render floating button
   return (

@@ -9,15 +9,10 @@ import {
   ChevronRight,
   MapPin,
   FlaskConical,
-  Bot,
   HeartPulse,
   Flame,
   ArrowUpRight,
-  TrendingDown,
-  Sparkles,
-  Calendar,
-  Layers,
-  PhoneCall
+  Layers
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -103,20 +98,6 @@ export default async function Dashboard() {
           >
             <MapPin className="w-3.5 h-3.5" />
             <span>Outbreak Heatmap</span>
-          </Link>
-          <Link
-            href="/dashboard/cases"
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gray-100 hover:bg-gray-200 text-gray-800 transition"
-          >
-            <Activity className="w-3.5 h-3.5 text-gray-600" />
-            <span>Manage Cases ({activeCases})</span>
-          </Link>
-          <Link
-            href="/farmer/chat"
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 transition"
-          >
-            <Bot className="w-3.5 h-3.5" />
-            <span>AI Vet Assistant</span>
           </Link>
         </div>
       </header>
@@ -297,13 +278,6 @@ export default async function Dashboard() {
                 </h2>
                 <p className="text-xs text-gray-400 mt-0.5">Automated algorithmic outbreak signals</p>
               </div>
-              <Link
-                href="/dashboard/alerts"
-                className="text-xs font-bold text-violet-700 hover:text-violet-800 flex items-center gap-1"
-              >
-                <span>All Alerts</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
             </div>
 
             {unreadAlerts.length === 0 ? (
@@ -380,10 +354,10 @@ export default async function Dashboard() {
                 Assign Field Team
               </Link>
               <Link
-                href="/farmer/chat"
-                className="text-xs font-bold px-3 py-1.5 rounded-lg bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 transition"
+                href="/dashboard/lab"
+                className="text-xs font-bold px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition"
               >
-                Launch AI Diagnostic
+                Lab Diagnostics
               </Link>
             </div>
           </div>
@@ -428,10 +402,10 @@ export default async function Dashboard() {
 
           <div className="mt-6 pt-4 border-t border-gray-100">
             <Link
-              href="/farmer/animals"
+              href="/dashboard/cases"
               className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center justify-between"
             >
-              <span>Explore Livestock Registry</span>
+              <span>Explore Case Records</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -460,12 +434,7 @@ export default async function Dashboard() {
             {recentReports.length === 0 ? (
               <div className="p-10 text-center text-gray-400">
                 <p className="text-xs font-bold">No health incident reports found</p>
-                <Link
-                  href="/farmer/report"
-                  className="text-xs text-violet-600 hover:underline mt-1 inline-block"
-                >
-                  File First Surveillance Report →
-                </Link>
+                <p className="text-xs text-gray-400 mt-1">Telemetry will appear here as field cases are reported.</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-100 overflow-x-auto">
@@ -545,8 +514,8 @@ export default async function Dashboard() {
 
           <div className="p-4 bg-gray-50/70 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-medium">
             <span>Automated NLP & Triage via Sarvam 105B Indic Model</span>
-            <Link href="/farmer/report" className="text-violet-700 font-bold hover:underline">
-              Submit Disease Incident →
+            <Link href="/dashboard/cases" className="text-violet-700 font-bold hover:underline">
+              Review Case Triage Queue →
             </Link>
           </div>
         </div>

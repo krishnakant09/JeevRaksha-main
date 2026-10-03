@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Camera,
@@ -26,6 +27,10 @@ import FarmerNav from "@/components/farmer/FarmerNav";
 type ViewState = "UPLOAD" | "SCANNING" | "AI_RESULT" | "CASE_SUBMITTED";
 
 export default function PhotoDetectPage() {
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [authChecking, setAuthChecking] = useState(true);
+
   const [viewState, setViewState] = useState<ViewState>("UPLOAD");
   const [photoData, setPhotoData] = useState<string | null>(null);
   const [isSamplePhoto, setIsSamplePhoto] = useState(false);
@@ -36,6 +41,25 @@ export default function PhotoDetectPage() {
   const [caseDetails, setCaseDetails] = useState<any>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Authentication check: Login required
+  useEffect(() => {
+    const stored = localStorage.getItem("jeevraksha_user");
+    if (!stored) {
+      router.replace("/login?redirect=/farmer/photo-detect");
+      return;
+    }
+    try {
+      const parsed = JSON.parse(stored);
+      setUser(parsed);
+      if (parsed.jurisdictionVillage || parsed.village) {
+        setVillage(parsed.jurisdictionVillage || parsed.village);
+      }
+      setAuthChecking(false);
+    } catch {
+      router.replace("/login?redirect=/farmer/photo-detect");
+    }
+  }, [router]);
 
   // Sample wound image for instant demo testing
   const samplePlaceholderSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'><rect width='600' height='400' fill='%23EEF2EA'/><rect x='80' y='60' width='440' height='280' rx='20' fill='%23DCEFE1'/><text x='300' y='180' font-size='70' text-anchor='middle'>🐃🩹</text><text x='300' y='240' font-size='20' font-family='sans-serif' font-weight='bold' fill='%232E7D46' text-anchor='middle'>पशु के पैर पर खुला घाव (Sample Wound Photo)</text><text x='300' y='270' font-size='14' font-family='sans-serif' fill='%235B6B5F' text-anchor='middle'>Murrah Buffalo - Open Trauma Lesion</text></svg>";
@@ -125,6 +149,17 @@ export default function PhotoDetectPage() {
       setIsSubmitting(false);
     }
   };
+
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-[#EEF2EA] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-[#2E7D46] border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm font-bold text-[#16261B]">पहुंच सत्यापित हो रही है... (Checking Login...)</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#EEF2EA] text-[#16261B]">

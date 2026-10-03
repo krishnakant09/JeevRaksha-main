@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Phone,
@@ -43,6 +44,10 @@ interface IVRCaseResult {
 }
 
 export default function IVRPage() {
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [authChecking, setAuthChecking] = useState(true);
+
   const [callState, setCallState] = useState<CallState>("IDLE");
   const [phoneNumber, setPhoneNumber] = useState("1800-727-466"); // 1800-PASHU-ROK
   const [callDuration, setCallDuration] = useState(0);
@@ -60,6 +65,25 @@ export default function IVRPage() {
   const [activeTab, setActiveTab] = useState<"dialer" | "developer">("dialer");
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Authentication check: Login required
+  useEffect(() => {
+    const stored = localStorage.getItem("jeevraksha_user");
+    if (!stored) {
+      router.replace("/login?redirect=/farmer/ivr");
+      return;
+    }
+    try {
+      const parsed = JSON.parse(stored);
+      setUser(parsed);
+      if (parsed.jurisdictionVillage || parsed.village) {
+        setUserVillage(parsed.jurisdictionVillage || parsed.village);
+      }
+      setAuthChecking(false);
+    } catch {
+      router.replace("/login?redirect=/farmer/ivr");
+    }
+  }, [router]);
 
   // Call timer effect
   useEffect(() => {
@@ -235,6 +259,17 @@ export default function IVRPage() {
     const secs = sec % 60;
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
+
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-[#EEF2EA] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-[#2E7D46] border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm font-bold text-[#16261B]">पहुंच सत्यापित हो रही है... (Checking Login...)</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#EEF2EA] text-[#16261B]">

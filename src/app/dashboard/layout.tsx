@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { type ReactNode, useState, useEffect } from "react";
 import NavLink from "./NavLink";
 import {
@@ -11,21 +11,19 @@ import {
   Activity,
   ShieldAlert,
   FlaskConical,
-  PlusCircle,
-  FileText,
-  Bot,
   LogOut,
   Shield,
-  Sparkles,
-  Home,
   Stethoscope
 } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
+
+  const isDoctor = user?.role === "VETERINARIAN";
 
   useEffect(() => {
     const stored = localStorage.getItem("jeevraksha_user");
@@ -51,6 +49,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [router]);
+
+  // If a Doctor lands on the Command Centre (/dashboard), redirect them straight to Case Management (/dashboard/cases)
+  useEffect(() => {
+    if (!loadingAuth && user?.role === "VETERINARIAN" && pathname === "/dashboard") {
+      router.replace("/dashboard/cases");
+    }
+  }, [loadingAuth, user, pathname, router]);
 
   const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMenu = () => setIsMobileMenuOpen(false);
@@ -112,17 +117,37 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     );
   }
 
+  // If doctor accessed /dashboard directly, show redirecting state while effect runs
+  if (isDoctor && pathname === "/dashboard") {
+    return (
+      <div className="min-h-screen bg-[#F6F8FA] flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-8 h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin mb-3" />
+        <p className="text-xs font-bold text-gray-700">Routing to Doctor Case Management...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-[#F6F8FA] overflow-x-hidden text-gray-900 font-sans">
       {/* Mobile Topbar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-b border-gray-200 z-50 flex items-center justify-between px-4 shadow-xs">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-lg flex items-center justify-center text-white shadow-xs">
-            <span className="text-sm">🐄</span>
+        <Link href={isDoctor ? "/dashboard/cases" : "/dashboard"} className="flex items-center gap-2">
+          <div
+            className={`w-8 h-8 ${
+              isDoctor
+                ? "bg-gradient-to-br from-amber-600 to-yellow-500"
+                : "bg-gradient-to-br from-violet-600 to-indigo-600"
+            } rounded-lg flex items-center justify-center text-white shadow-xs`}
+          >
+            <span className="text-sm">{isDoctor ? "🩺" : "🐄"}</span>
           </div>
           <div>
-            <h2 className="text-base font-extrabold text-gray-900 leading-none">JeevRaksha</h2>
-            <span className="text-[10px] font-bold text-violet-600">Admin Command</span>
+            <h2 className="text-base font-extrabold text-gray-900 leading-none">
+              {isDoctor ? "Doctor Portal" : "JeevRaksha"}
+            </h2>
+            <span className={`text-[10px] font-bold ${isDoctor ? "text-amber-600" : "text-violet-600"}`}>
+              {isDoctor ? "Operations & Triage" : "Admin Command"}
+            </span>
           </div>
         </Link>
         <button
@@ -150,113 +175,128 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       >
         {/* Brand Header */}
         <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 bg-gradient-to-tr from-violet-700 via-indigo-600 to-purple-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-violet-500/20 group-hover:scale-105 transition-transform">
-              <span className="text-base">🐄</span>
+          <Link href={isDoctor ? "/dashboard/cases" : "/"} className="flex items-center gap-2.5 group">
+            <div
+              className={`w-9 h-9 ${
+                isDoctor
+                  ? "bg-gradient-to-tr from-amber-600 via-yellow-600 to-amber-500 shadow-amber-500/20"
+                  : "bg-gradient-to-tr from-violet-700 via-indigo-600 to-purple-500 shadow-violet-500/20"
+              } rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform`}
+            >
+              <span className="text-base">{isDoctor ? "🩺" : "🐄"}</span>
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-base tracking-tight text-gray-900">JeevRaksha</span>
-                <span className="text-[9px] uppercase font-black px-1.5 py-0.5 rounded bg-violet-100 text-violet-700">
-                  Grid
+                <span className="font-extrabold text-base tracking-tight text-gray-900">
+                  {isDoctor ? "Doctor Portal" : "JeevRaksha"}
+                </span>
+                <span
+                  className={`text-[9px] uppercase font-black px-1.5 py-0.5 rounded ${
+                    isDoctor ? "bg-amber-100 text-amber-800" : "bg-violet-100 text-violet-700"
+                  }`}
+                >
+                  {isDoctor ? "VET" : "Grid"}
                 </span>
               </div>
-              <p className="text-[11px] text-gray-500 font-medium">Surveillance Command Center</p>
+              <p className="text-[11px] text-gray-500 font-medium">
+                {isDoctor ? "Clinical Operations & Triage" : "Surveillance Command Center"}
+              </p>
             </div>
           </Link>
         </div>
 
         {/* User Card */}
-        <div className="p-3.5 mx-3 mt-3 rounded-xl bg-gradient-to-r from-violet-50/80 to-indigo-50/50 border border-violet-100/60 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-violet-600 text-white font-bold text-sm flex items-center justify-center shadow-xs">
-            {user?.name ? user.name.charAt(0).toUpperCase() : "A"}
+        <div
+          className={`p-3.5 mx-3 mt-3 rounded-xl ${
+            isDoctor
+              ? "bg-gradient-to-r from-amber-50/80 to-yellow-50/50 border-amber-100/60"
+              : "bg-gradient-to-r from-violet-50/80 to-indigo-50/50 border-violet-100/60"
+          } border flex items-center gap-3`}
+        >
+          <div
+            className={`w-9 h-9 rounded-full ${
+              isDoctor ? "bg-amber-600" : "bg-violet-600"
+            } text-white font-bold text-sm flex items-center justify-center shadow-xs`}
+          >
+            {user?.name ? user.name.charAt(0).toUpperCase() : isDoctor ? "D" : "A"}
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
               <p className="text-xs font-bold text-gray-900 truncate">
-                {user?.name || "Official Administrator"}
+                {user?.name || (isDoctor ? "Dr. Veterinarian" : "Official Administrator")}
               </p>
-              <Shield className="w-3 h-3 text-violet-600 shrink-0" />
+              {isDoctor ? (
+                <Stethoscope className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              ) : (
+                <Shield className="w-3.5 h-3.5 text-violet-600 shrink-0" />
+              )}
             </div>
-            <p className="text-[10px] font-semibold text-violet-700 uppercase tracking-wide">
-              {user?.role || "ADMIN / OFFICER"}
+            <p
+              className={`text-[10px] font-semibold ${
+                isDoctor ? "text-amber-700" : "text-violet-700"
+              } uppercase tracking-wide`}
+            >
+              {isDoctor ? "VETERINARY DOCTOR" : user?.role || "ADMIN / OFFICER"}
             </p>
           </div>
         </div>
 
         {/* Navigation items */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          <p className="text-[10px] font-black uppercase text-gray-400 px-3 pt-2 pb-1 tracking-wider">
-            Surveillance Telemetry
-          </p>
-          <NavLink
-            href="/dashboard"
-            label="Command Center"
-            icon={LayoutDashboard}
-            exact
-            onClick={closeMenu}
-          />
-          <NavLink
-            href="/dashboard/map"
-            label="Geospatial Outbreak Map"
-            icon={MapPin}
-            badge="LIVE"
-            badgeColor="bg-emerald-100 text-emerald-700"
-            onClick={closeMenu}
-          />
-
-          <p className="text-[10px] font-black uppercase text-gray-400 px-3 pt-4 pb-1 tracking-wider">
-            Operations & Triage
-          </p>
-          <NavLink
-            href="/dashboard/cases"
-            label="Case Management"
-            icon={Activity}
-            onClick={closeMenu}
-          />
-          <NavLink
-            href="/dashboard/alerts"
-            label="Priority Alerts"
-            icon={ShieldAlert}
-            badgeColor="bg-red-100 text-red-700"
-            onClick={closeMenu}
-          />
-          <NavLink
-            href="/dashboard/lab"
-            label="Diagnostic Samples"
-            icon={FlaskConical}
-            onClick={closeMenu}
-          />
-
-          <p className="text-[10px] font-black uppercase text-gray-400 px-3 pt-4 pb-1 tracking-wider">
-            Farmer & Field Integration
-          </p>
-          <NavLink
-            href="/farmer/chat"
-            label="AI Vet Voice Assistant"
-            icon={Bot}
-            badge="Sarvam AI"
-            badgeColor="bg-purple-100 text-purple-700"
-            onClick={closeMenu}
-          />
-          <NavLink
-            href="/farmer/report"
-            label="Submit Disease Report"
-            icon={PlusCircle}
-            onClick={closeMenu}
-          />
-          <NavLink
-            href="/farmer/my-issues"
-            label="Farmer Reports Feed"
-            icon={FileText}
-            onClick={closeMenu}
-          />
-          <NavLink
-            href="/farmer/animals"
-            label="Livestock Registry"
-            icon={Home}
-            onClick={closeMenu}
-          />
+          {isDoctor ? (
+            /* ── DOCTOR / VETERINARIAN: ONLY OPERATIONS & TRIAGE ── */
+            <>
+              <div className="px-3 pt-2 pb-1.5 flex items-center justify-between">
+                <p className="text-[10px] font-black uppercase text-amber-800 tracking-wider">
+                  Operations & Triage
+                </p>
+                <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
+                  Doctor Clinic
+                </span>
+              </div>
+              <NavLink
+                href="/dashboard/cases"
+                label="Case Management"
+                icon={Activity}
+                onClick={closeMenu}
+              />
+              <NavLink
+                href="/dashboard/alerts"
+                label="Priority Alerts"
+                icon={ShieldAlert}
+                badgeColor="bg-red-100 text-red-700"
+                onClick={closeMenu}
+              />
+              <NavLink
+                href="/dashboard/lab"
+                label="Diagnostic Samples"
+                icon={FlaskConical}
+                onClick={closeMenu}
+              />
+            </>
+          ) : (
+            /* ── ADMINISTRATOR: FULL SURVEILLANCE SUITE ── */
+            <>
+              <p className="text-[10px] font-black uppercase text-gray-400 px-3 pt-2 pb-1 tracking-wider">
+                Surveillance Telemetry
+              </p>
+              <NavLink
+                href="/dashboard"
+                label="Command Center"
+                icon={LayoutDashboard}
+                exact
+                onClick={closeMenu}
+              />
+              <NavLink
+                href="/dashboard/map"
+                label="Geospatial Outbreak Map"
+                icon={MapPin}
+                badge="LIVE"
+                badgeColor="bg-emerald-100 text-emerald-700"
+                onClick={closeMenu}
+              />
+            </>
+          )}
         </nav>
 
         {/* Sidebar Footer */}

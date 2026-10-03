@@ -21,12 +21,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
-    // Return user info (no password)
+    // Check if account is suspended or rejected
+    if (user.status === "SUSPENDED" || user.status === "REJECTED") {
+      return NextResponse.json(
+        { error: `Account is ${user.status.toLowerCase()}. Please contact administration.` },
+        { status: 403 }
+      );
+    }
+
+    // Return user info with jurisdiction (no password)
     return NextResponse.json({
       id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
+      status: user.status,
+      registrationNo: user.registrationNo,
+      jurisdictionLevel: user.jurisdictionLevel,
+      jurisdictionState: user.jurisdictionState,
+      jurisdictionDistrict: user.jurisdictionDistrict,
+      jurisdictionTaluka: user.jurisdictionTaluka,
+      jurisdictionVillage: user.jurisdictionVillage,
     });
   } catch (err) {
     console.error(err);

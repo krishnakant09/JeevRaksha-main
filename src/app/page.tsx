@@ -114,6 +114,8 @@ export default function HomeLandingPage() {
   const isAdmin = user && user.role === "ADMIN";
   const doctorPortalHref = isDoctor ? "/dashboard/cases" : "/login?role=vet&redirect=/dashboard/cases";
   const adminPortalHref = isAdmin ? "/dashboard" : "/login?role=admin&redirect=/dashboard";
+  const ivrHref = user ? "/farmer/ivr" : "/login?role=farmer&redirect=/farmer/ivr";
+  const photoDetectHref = user ? "/farmer/photo-detect" : "/login?role=farmer&redirect=/farmer/photo-detect";
 
   const activeGuide = SYMPTOM_GUIDE_ITEMS[selectedGuideIndex];
 
@@ -365,7 +367,7 @@ export default function HomeLandingPage() {
                 </Link>
 
                 <Link
-                  href="/farmer/ivr"
+                  href={ivrHref}
                   className="p-4 rounded-2xl bg-[#DCEFE1] hover:bg-emerald-100 text-[#16261B] flex items-center justify-center gap-2 font-black text-sm shadow-md active:scale-[0.99] transition shrink-0 border-2 border-[#2E7D46]"
                 >
                   <span className="text-2xl">📞</span>
@@ -376,7 +378,7 @@ export default function HomeLandingPage() {
                 </Link>
 
                 <Link
-                  href="/farmer/photo-detect"
+                  href={photoDetectHref}
                   className="p-4 rounded-2xl bg-[#E8A317] hover:bg-[#D69312] text-[#16261B] flex items-center justify-center gap-2.5 font-black text-sm shadow-md active:scale-[0.99] transition shrink-0 border-2 border-[#B87E0E]"
                 >
                   <span className="text-2xl">📷</span>

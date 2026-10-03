@@ -123,15 +123,6 @@ export default function FarmerNav({ userName }: FarmerNavProps) {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2">
-            <Link
-              href="/dashboard"
-              className="hidden lg:flex items-center gap-1 text-xs font-bold text-[#5B6B5F] hover:text-[#2E7D46] px-2.5 py-1.5 rounded-lg hover:bg-[#EEF2EA] transition"
-              title="Authority Surveillance Dashboard"
-            >
-              <ShieldAlert className="w-3.5 h-3.5 text-[#5B6B5F]" />
-              <span>Admin Map</span>
-            </Link>
-
             <button
               onClick={handleLogout}
               className="flex items-center gap-1.5 text-xs font-bold text-[#5B6B5F] hover:text-[#C8372D] px-3 py-1.5 rounded-lg border border-[#D5DDD0] hover:border-[#F8DAD6] hover:bg-[#F8DAD6]/30 transition"

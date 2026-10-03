@@ -12,13 +12,20 @@ model User {
   email         String         @unique
   name          String?
   password      String
-  role          String         @default("FARMER") // FARMER, VETERINARIAN, FIELD_WORKER, LABORATORY, ADMIN
-  createdAt     DateTime       @default(now())
-  animals       Animal[]       // If farmer
-  reportsFiled  HealthReport[] @relation("Reporter")
-  fieldVisits   FieldVisit[]   @relation("FieldWorker")
-  casesAssigned Case[]         @relation("VetAssigned")
-  samplesProcessed Sample[]    @relation("LabUser")
+  role                  String         @default("FARMER") // FARMER, VETERINARIAN, FIELD_WORKER, LABORATORY, ADMIN, STATE_OFFICER, DISTRICT_OFFICER, TALUKA_OFFICER
+  status                String         @default("APPROVED") // PENDING, APPROVED, REJECTED, SUSPENDED
+  registrationNo        String?
+  jurisdictionLevel     String         @default("STATE") // STATE, DISTRICT, TALUKA, VILLAGE
+  jurisdictionState     String         @default("Maharashtra")
+  jurisdictionDistrict  String?        // e.g. "Pune"
+  jurisdictionTaluka    String?        // e.g. "Haveli"
+  jurisdictionVillage   String?
+  createdAt             DateTime       @default(now())
+  animals               Animal[]       // If farmer
+  reportsFiled          HealthReport[] @relation("Reporter")
+  fieldVisits           FieldVisit[]   @relation("FieldWorker")
+  casesAssigned         Case[]         @relation("VetAssigned")
+  samplesProcessed      Sample[]       @relation("LabUser")
 }
 
 model Animal {

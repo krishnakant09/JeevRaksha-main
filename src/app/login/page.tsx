@@ -180,6 +180,54 @@ function LoginForm() {
             <div className="grid grid-cols-1 gap-1.5 text-xs font-semibold">
               <button
                 type="button"
+                onClick={() => fillCredentials("state.officer@jeevraksha.in", "password123")}
+                className={`p-2 rounded-lg text-left transition flex items-center justify-between ${
+                  email === "state.officer@jeevraksha.in"
+                    ? "bg-purple-100 text-purple-900 border border-purple-300"
+                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                }`}
+              >
+                <span className="flex items-center gap-1.5">
+                  <span>🏛️</span>
+                  <span><strong>State Officer:</strong> state.officer@jeevraksha.in (MH State)</span>
+                </span>
+                <span className="text-[10px] font-black text-purple-700 uppercase">State Wide</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fillCredentials("pune.officer@jeevraksha.in", "password123")}
+                className={`p-2 rounded-lg text-left transition flex items-center justify-between ${
+                  email === "pune.officer@jeevraksha.in"
+                    ? "bg-blue-100 text-blue-900 border border-blue-300"
+                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                }`}
+              >
+                <span className="flex items-center gap-1.5">
+                  <span>🏢</span>
+                  <span><strong>District Officer:</strong> pune.officer@jeevraksha.in (Pune)</span>
+                </span>
+                <span className="text-[10px] font-black text-blue-700 uppercase">District</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fillCredentials("haveli.officer@jeevraksha.in", "password123")}
+                className={`p-2 rounded-lg text-left transition flex items-center justify-between ${
+                  email === "haveli.officer@jeevraksha.in"
+                    ? "bg-indigo-100 text-indigo-900 border border-indigo-300"
+                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                }`}
+              >
+                <span className="flex items-center gap-1.5">
+                  <span>📍</span>
+                  <span><strong>Taluka Officer:</strong> haveli.officer@jeevraksha.in (Haveli)</span>
+                </span>
+                <span className="text-[10px] font-black text-indigo-700 uppercase">Taluka</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => fillCredentials("vet@jeevraksha.in", "password123")}
                 className={`p-2 rounded-lg text-left transition flex items-center justify-between ${
                   email === "vet@jeevraksha.in"
@@ -191,7 +239,7 @@ function LoginForm() {
                   <span>🩺</span>
                   <span><strong>Doctor (Vet):</strong> vet@jeevraksha.in</span>
                 </span>
-                <span className="text-[10px] font-black text-amber-700 uppercase">One-Tap Fill</span>
+                <span className="text-[10px] font-black text-amber-700 uppercase">Doctor</span>
               </button>
 
               <button
@@ -205,9 +253,9 @@ function LoginForm() {
               >
                 <span className="flex items-center gap-1.5">
                   <span>⚙️</span>
-                  <span><strong>Administrator:</strong> admin@jeevraksha.in</span>
+                  <span><strong>System Admin:</strong> admin@jeevraksha.in</span>
                 </span>
-                <span className="text-[10px] font-black text-gray-700 uppercase">One-Tap Fill</span>
+                <span className="text-[10px] font-black text-gray-700 uppercase">Admin</span>
               </button>
 
               <button
@@ -223,7 +271,7 @@ function LoginForm() {
                   <span>🌾</span>
                   <span><strong>Farmer:</strong> farmer@jeevraksha.in</span>
                 </span>
-                <span className="text-[10px] font-black text-emerald-700 uppercase">One-Tap Fill</span>
+                <span className="text-[10px] font-black text-emerald-700 uppercase">Farmer</span>
               </button>
             </div>
           </div>

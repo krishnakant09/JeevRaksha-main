@@ -22,8 +22,16 @@ export default function ChatPage() {
 
   useEffect(() => {
     const stored = localStorage.getItem("jeevraksha_user");
-    if (!stored) { router.push("/login"); return; }
-    setUser(JSON.parse(stored));
+    if (!stored) {
+      router.push("/login?redirect=/farmer/chat");
+      return;
+    }
+    try {
+      const parsed = JSON.parse(stored);
+      setUser(parsed);
+    } catch {
+      router.push("/login");
+    }
   }, [router]);
 
   useEffect(() => {
