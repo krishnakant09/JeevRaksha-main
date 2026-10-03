@@ -36,6 +36,14 @@ export default function FarmerNav({ userName }: FarmerNavProps) {
       badge: "Fast Triage",
     },
     {
+      label: "AI Vet Assistant",
+      labelHi: "AI पशु सहायक",
+      href: "/farmer/chat",
+      icon: Bot,
+      highlight: true,
+      badge: "AI Chat",
+    },
+    {
       label: "Photo Triage",
       labelHi: "फोटो से जांच",
       href: "/farmer/photo-detect",

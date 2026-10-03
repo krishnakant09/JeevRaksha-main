@@ -2,8 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Script from "next/script";
-import { Mic, MicOff, Send, Volume2, ArrowLeft, Image as ImageIcon, X } from "lucide-react";
+import { Mic, MicOff, Send, Volume2, ArrowLeft, Image as ImageIcon, X, Bot } from "lucide-react";
 import FarmerNav from "@/components/farmer/FarmerNav";
 
 export default function ChatPage() {
@@ -168,7 +167,7 @@ export default function ChatPage() {
       <div className="bg-white border-b px-4 py-2.5 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-purple-500 rounded-xl flex items-center justify-center shadow-xs">
-            <span className="text-white text-base">🤖</span>
+            <Bot className="w-5 h-5 text-white" />
           </div>
           <div>
             <h1 className="text-sm font-extrabold text-gray-900 leading-tight">AI Veterinary Voice Assistant</h1>

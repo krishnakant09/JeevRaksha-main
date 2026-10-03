@@ -160,9 +160,7 @@ export default function ChatFAB() {
     setLoading(false);
   };
 
-  // Only render if logged in
-  if (!user) return null;
-
+  // Render floating button
   return (
     <>
       <button
