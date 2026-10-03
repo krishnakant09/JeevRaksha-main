@@ -22,7 +22,9 @@ import {
   Menu,
   X,
   Home,
-  Info
+  Info,
+  Stethoscope,
+  Calendar
 } from "lucide-react";
 
 interface SymptomGuide {
@@ -165,6 +167,13 @@ export default function HomeLandingPage() {
               Home (होम)
             </Link>
             <Link
+              href="/appointments"
+              className="px-3 py-1.5 text-xs font-bold text-[#2E7D46] hover:bg-white rounded-lg transition flex items-center gap-1.5"
+            >
+              <Stethoscope className="w-3.5 h-3.5" />
+              <span>Connect with Vet (डॉक्टर)</span>
+            </Link>
+            <Link
               href="/about"
               className="px-3 py-1.5 text-xs font-bold text-[#5B6B5F] hover:text-[#16261B] hover:bg-white rounded-lg transition"
             >
@@ -175,18 +184,6 @@ export default function HomeLandingPage() {
               className="px-3 py-1.5 text-xs font-bold text-[#5B6B5F] hover:text-[#16261B] hover:bg-white rounded-lg transition"
             >
               प्राथमिक उपचार (First Aid)
-            </a>
-            <a
-              href="#surveillance"
-              className="px-3 py-1.5 text-xs font-bold text-[#5B6B5F] hover:text-[#16261B] hover:bg-white rounded-lg transition"
-            >
-              रोग निगरानी (Surveillance)
-            </a>
-            <a
-              href="#portals"
-              className="px-3 py-1.5 text-xs font-bold text-[#5B6B5F] hover:text-[#16261B] hover:bg-white rounded-lg transition"
-            >
-              पोर्टल (Portals)
             </a>
           </div>
 
@@ -250,6 +247,14 @@ export default function HomeLandingPage() {
               >
                 <Home className="w-4 h-4 text-[#2E7D46]" />
                 <span>Home (होम)</span>
+              </Link>
+              <Link
+                href="/appointments"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 text-[#2E7D46] font-bold text-xs border border-emerald-200"
+              >
+                <Stethoscope className="w-4 h-4 text-[#2E7D46]" />
+                <span>Connect with Vet (डॉक्टर)</span>
               </Link>
               <Link
                 href="/about"

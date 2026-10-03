@@ -76,7 +76,7 @@ export default function FarmerNav({ userName }: FarmerNavProps) {
     <>
       {/* Top Navbar */}
       <header className="bg-white/95 backdrop-blur-md border-b border-[#D5DDD0] sticky top-0 z-30 shadow-xs">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo & Brand */}
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2 group">
