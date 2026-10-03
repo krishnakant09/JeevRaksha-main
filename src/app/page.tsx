@@ -9,7 +9,6 @@ import {
   Activity,
   CheckCircle2,
   MapPin,
-  Stethoscope,
   Sparkles,
   Phone,
   Clock,
@@ -111,6 +110,11 @@ export default function HomeLandingPage() {
     }
   }, []);
 
+  const isDoctor = user && (user.role === "VETERINARIAN" || user.role === "ADMIN");
+  const isAdmin = user && user.role === "ADMIN";
+  const doctorPortalHref = isDoctor ? "/dashboard/cases" : "/login?role=vet&redirect=/dashboard/cases";
+  const adminPortalHref = isAdmin ? "/dashboard" : "/login?role=admin&redirect=/dashboard";
+
   const activeGuide = SYMPTOM_GUIDE_ITEMS[selectedGuideIndex];
 
   return (
@@ -208,7 +212,7 @@ export default function HomeLandingPage() {
 
         <div className="max-w-6xl mx-auto relative z-10 pt-2">
           {/* ── 3 PRIMARY ENTRY BUTTONS (LESS-EDUCATED ACCESSIBILITY & RAPID ACCESS) ── */}
-          <div className="mb-10 bg-black/20 backdrop-blur-md p-4 sm:p-6 rounded-3xl border border-white/20 shadow-2xl">
+          <div id="portals" className="mb-10 bg-black/20 backdrop-blur-md p-4 sm:p-6 rounded-3xl border border-white/20 shadow-2xl">
             <div className="flex items-center justify-between flex-wrap gap-2 mb-4 pb-3 border-b border-white/10">
               <div className="flex items-center gap-2.5">
                 <span className="w-3.5 h-3.5 rounded-full bg-[#E8A317] animate-pulse" />
@@ -256,7 +260,7 @@ export default function HomeLandingPage() {
 
               {/* 2. VET PORTAL */}
               <Link
-                href="/dashboard/cases"
+                href={doctorPortalHref}
                 className="group relative bg-[#FFFDF5] hover:bg-white text-[#16261B] rounded-2xl p-5 border-4 border-[#E8A317] shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-1 flex flex-col justify-between active:scale-[0.98]"
               >
                 <div>
@@ -279,7 +283,9 @@ export default function HomeLandingPage() {
                   </p>
                 </div>
                 <div className="mt-4 pt-3 border-t border-[#D5DDD0] flex items-center justify-between text-xs font-black text-[#B87E0E]">
-                  <span className="bg-[#FBEFCF] px-2.5 py-1 rounded-lg">केस देखें (Cases)</span>
+                  <span className="bg-[#FBEFCF] px-2.5 py-1 rounded-lg">
+                    {isDoctor ? "केस देखें (Cases)" : "लॉग इन करें (Sign In)"}
+                  </span>
                   <span className="w-8 h-8 rounded-xl bg-[#E8A317] text-[#16261B] flex items-center justify-center font-black group-hover:translate-x-1 transition-transform">
                     ➔
                   </span>
@@ -288,7 +294,7 @@ export default function HomeLandingPage() {
 
               {/* 3. ADMIN PORTAL */}
               <Link
-                href="/dashboard"
+                href={adminPortalHref}
                 className="group relative bg-[#F7F9FB] hover:bg-white text-[#16261B] rounded-2xl p-5 border-4 border-[#16261B] shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-1 flex flex-col justify-between active:scale-[0.98]"
               >
                 <div>
@@ -575,112 +581,6 @@ export default function HomeLandingPage() {
               <span>🩺 File Disease Report for this Symptom</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── PORTALS SHOWCASE ── */}
-      <section id="portals" className="py-16 px-4 sm:px-8 bg-white border-t border-[#D5DDD0]">
-        <div className="max-w-6xl mx-auto space-y-10">
-          <div className="text-center max-w-2xl mx-auto">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-[#2E7D46] bg-[#DCEFE1] px-3 py-1 rounded-full">
-              Integrated Access Grid
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-[#16261B] mt-2">
-              सभी हितधारकों के लिए एक मंच
-            </h2>
-            <p className="text-xs sm:text-sm text-[#5B6B5F] font-semibold mt-1">
-              Purpose-built interfaces connecting farmers, field workers, veterinarians, and district administrators.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Farmer Card */}
-            <div className="bg-[#EEF2EA] rounded-3xl p-6 border border-[#D5DDD0] flex flex-col justify-between hover:shadow-lg transition">
-              <div className="space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-[#DCEFE1] flex items-center justify-center text-2xl">
-                  🌾
-                </div>
-                <h3 className="text-xl font-extrabold text-[#16261B]">किसान पोर्टल (Farmer)</h3>
-                <p className="text-xs sm:text-sm text-[#5B6B5F] leading-relaxed">
-                  Register cattle, buffalo, goats, and poultry. Report illnesses with Hindi voice or visual symptoms, track vet visits, and receive vaccination reminders.
-                </p>
-              </div>
-
-              <div className="pt-6 space-y-2">
-                <Link
-                  href="/farmer/report"
-                  className="w-full py-3 bg-[#2E7D46] hover:bg-[#256639] text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition"
-                >
-                  <PlusCircle className="w-4 h-4" />
-                  <span>Report Sickness (रोग दर्ज करें)</span>
-                </Link>
-                <Link
-                  href="/farmer/animals"
-                  className="w-full py-2.5 bg-white hover:bg-gray-100 text-[#16261B] border border-[#D5DDD0] rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition"
-                >
-                  <span>My Livestock (मेरे पशु)</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Vet Card */}
-            <div className="bg-[#EEF2EA] rounded-3xl p-6 border border-[#D5DDD0] flex flex-col justify-between hover:shadow-lg transition">
-              <div className="space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-[#FBEFCF] flex items-center justify-center text-2xl">
-                  🩺
-                </div>
-                <h3 className="text-xl font-extrabold text-[#16261B]">पशु चिकित्सक (Veterinarian)</h3>
-                <p className="text-xs sm:text-sm text-[#5B6B5F] leading-relaxed">
-                  Triage assigned village cases, navigate on-site inspections, log clinical findings, prescribe medications, and dispatch biological samples for lab tests.
-                </p>
-              </div>
-
-              <div className="pt-6 space-y-2">
-                <Link
-                  href="/dashboard/cases"
-                  className="w-full py-3 bg-[#E8A317] hover:bg-[#D69312] text-[#16261B] rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition"
-                >
-                  <Stethoscope className="w-4 h-4" />
-                  <span>Review Case Queue</span>
-                </Link>
-                <Link
-                  href="/login"
-                  className="w-full py-2.5 bg-white hover:bg-gray-100 text-[#16261B] border border-[#D5DDD0] rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition"
-                >
-                  <span>Doctor Sign In</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Admin / Authority Card */}
-            <div className="bg-[#EEF2EA] rounded-3xl p-6 border border-[#D5DDD0] flex flex-col justify-between hover:shadow-lg transition">
-              <div className="space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-[#F8DAD6] flex items-center justify-center text-2xl">
-                  🛡️
-                </div>
-                <h3 className="text-xl font-extrabold text-[#16261B]">प्रशासन (Surveillance)</h3>
-                <p className="text-xs sm:text-sm text-[#5B6B5F] leading-relaxed">
-                  Live GIS outbreak maps, village cluster tracking, mortality velocity scoring, containment alerts, and vaccine coverage heatmaps.
-                </p>
-              </div>
-
-              <div className="pt-6 space-y-2">
-                <Link
-                  href="/dashboard"
-                  className="w-full py-3 bg-[#16261B] hover:bg-black text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition"
-                >
-                  <Activity className="w-4 h-4 text-emerald-400" />
-                  <span>Open Surveillance Dashboard</span>
-                </Link>
-                <Link
-                  href="/dashboard/alerts"
-                  className="w-full py-2.5 bg-white hover:bg-gray-100 text-[#16261B] border border-[#D5DDD0] rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition"
-                >
-                  <span>Outbreak Alerts</span>
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
       </section>

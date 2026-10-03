@@ -139,7 +139,7 @@ export async function POST(req: Request) {
     });
 
     // 6. Create Health Report, Symptoms, Case, and Alert in Transaction
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: any) => {
       const report = await tx.healthReport.create({
         data: {
           animalId: animal.id,
