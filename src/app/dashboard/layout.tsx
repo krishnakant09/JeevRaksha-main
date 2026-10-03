@@ -151,58 +151,69 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
         </Link>
         <button
+          type="button"
           onClick={toggleMenu}
-          className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
+          className="lg:hidden w-10 h-10 flex items-center justify-center text-gray-700 hover:text-gray-900 bg-gray-100/80 hover:bg-gray-200/80 active:scale-95 rounded-xl transition cursor-pointer shrink-0 touch-manipulation select-none"
           aria-label="Toggle menu"
+          aria-expanded={isMobileMenuOpen}
         >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isMobileMenuOpen ? <X className="w-6 h-6 text-red-600" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
       {/* Sidebar Overlay (Mobile) */}
       {isMobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/40 z-40 backdrop-blur-xs transition-opacity"
+          className="lg:hidden fixed inset-0 bg-black/40 z-40 backdrop-blur-xs transition-opacity cursor-pointer"
           onClick={closeMenu}
+          aria-hidden="true"
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`w-72 bg-white border-r border-gray-200/80 flex flex-col fixed h-full z-50 transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`w-72 max-w-[85vw] bg-white border-r border-gray-200/80 flex flex-col fixed top-0 left-0 bottom-0 h-full z-50 transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Brand Header */}
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-          <Link href={isDoctor ? "/dashboard/cases" : "/"} className="flex items-center gap-2.5 group">
+        <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-2">
+          <Link href={isDoctor ? "/dashboard/cases" : "/"} className="flex items-center gap-2.5 group min-w-0">
             <div
               className={`w-9 h-9 ${
                 isDoctor
                   ? "bg-gradient-to-tr from-amber-600 via-yellow-600 to-amber-500 shadow-amber-500/20"
                   : "bg-gradient-to-tr from-violet-700 via-indigo-600 to-purple-500 shadow-violet-500/20"
-              } rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform`}
+              } rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform shrink-0`}
             >
               <span className="text-base">{isDoctor ? "🩺" : "🐄"}</span>
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-base tracking-tight text-gray-900">
+                <span className="font-extrabold text-base tracking-tight text-gray-900 truncate">
                   {isDoctor ? "Doctor Portal" : "JeevRaksha"}
                 </span>
                 <span
-                  className={`text-[9px] uppercase font-black px-1.5 py-0.5 rounded ${
+                  className={`text-[9px] uppercase font-black px-1.5 py-0.5 rounded shrink-0 ${
                     isDoctor ? "bg-amber-100 text-amber-800" : "bg-violet-100 text-violet-700"
                   }`}
                 >
                   {isDoctor ? "VET" : "Grid"}
                 </span>
               </div>
-              <p className="text-[11px] text-gray-500 font-medium">
+              <p className="text-[11px] text-gray-500 font-medium truncate">
                 {isDoctor ? "Clinical Operations & Triage" : "Surveillance Command Center"}
               </p>
             </div>
           </Link>
+          <button
+            type="button"
+            onClick={closeMenu}
+            className="lg:hidden p-2 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-100 active:scale-95 transition shrink-0 cursor-pointer touch-manipulation"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5 text-gray-600" />
+          </button>
         </div>
 
         {/* User Card */}

@@ -18,7 +18,11 @@ import {
   Users,
   Compass,
   Bell,
-  Check
+  Check,
+  Menu,
+  X,
+  Home,
+  Info
 } from "lucide-react";
 
 interface SymptomGuide {
@@ -98,6 +102,7 @@ const SYMPTOM_GUIDE_ITEMS: SymptomGuide[] = [
 export default function HomeLandingPage() {
   const [user, setUser] = useState<any>(null);
   const [selectedGuideIndex, setSelectedGuideIndex] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("jeevraksha_user");
@@ -121,84 +126,207 @@ export default function HomeLandingPage() {
 
   return (
     <div className="min-h-screen bg-[#EEF2EA] text-[#16261B] overflow-x-hidden">
+      {/* Mobile Drawer Backdrop Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-xs z-40 transition-opacity"
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* ── TOP NAV BAR ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#D5DDD0] shadow-xs px-4 sm:px-8 py-3 flex items-center justify-between">
-        {/* Brand */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#1B4328] via-[#2E7D46] to-[#3B9B58] flex items-center justify-center text-white shadow-md shadow-[#2E7D46]/20 group-hover:scale-105 transition-transform">
-            <span className="text-xl">🐄</span>
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-lg font-black tracking-tight text-[#16261B]">Jeev Rakshak</span>
-              <span className="text-[10px] font-extrabold uppercase tracking-wider bg-[#DCEFE1] text-[#2E7D46] px-2 py-0.5 rounded-full">
-                Surveillance Grid
-              </span>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#D5DDD0] shadow-xs px-3 sm:px-8 py-2.5 sm:py-3">
+        <div className="flex items-center justify-between gap-2 max-w-7xl mx-auto">
+          {/* Brand */}
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group min-w-0 shrink">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-[#1B4328] via-[#2E7D46] to-[#3B9B58] flex items-center justify-center text-white shadow-md shadow-[#2E7D46]/20 group-hover:scale-105 transition-transform shrink-0">
+              <span className="text-lg sm:text-xl">🐄</span>
             </div>
-            <p className="text-[11px] font-semibold text-[#5B6B5F] -mt-0.5">
-              जीव रक्षा • AI Livestock Health & Early Warning
-            </p>
-          </div>
-        </Link>
-
-        {/* Center Links */}
-        <div className="hidden md:flex items-center gap-1 bg-[#EEF2EA] p-1 rounded-xl border border-[#D5DDD0]">
-          <a
-            href="#first-aid"
-            className="px-3 py-1.5 text-xs font-bold text-[#5B6B5F] hover:text-[#16261B] hover:bg-white rounded-lg transition"
-          >
-            प्राथमिक उपचार (First Aid)
-          </a>
-          <a
-            href="#surveillance"
-            className="px-3 py-1.5 text-xs font-bold text-[#5B6B5F] hover:text-[#16261B] hover:bg-white rounded-lg transition"
-          >
-            रोग निगरानी (Surveillance)
-          </a>
-          <a
-            href="#portals"
-            className="px-3 py-1.5 text-xs font-bold text-[#5B6B5F] hover:text-[#16261B] hover:bg-white rounded-lg transition"
-          >
-            पोर्टल (Portals)
-          </a>
-        </div>
-
-        {/* Auth & Actions */}
-        <div className="flex items-center gap-2">
-          {!user ? (
-            <>
-              <Link
-                href="/login"
-                className="hidden sm:inline-flex text-xs font-bold text-[#16261B] hover:text-[#2E7D46] px-3 py-2 rounded-xl transition"
-              >
-                Sign In (लॉग इन)
-              </Link>
-              <Link
-                href="/register"
-                className="hidden md:inline-flex items-center text-xs font-bold text-[#2E7D46] bg-[#DCEFE1] hover:bg-[#DCEFE1]/80 px-3.5 py-2 rounded-xl transition"
-              >
-                Create Account
-              </Link>
-            </>
-          ) : (
-            <Link
-              href={user.role === "FARMER" ? "/farmer/report" : "/dashboard"}
-              className="inline-flex text-xs font-bold text-[#2E7D46] bg-[#DCEFE1] px-3 py-2 rounded-xl"
-            >
-              {user.role === "FARMER" ? "🌾 Farmer Portal" : "🩺 Dashboard"}
-            </Link>
-          )}
-
-          {/* Quick Emergency Report Button */}
-          <Link
-            href="/farmer/report"
-            className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#C8372D] hover:bg-[#B32D24] text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-md shadow-[#C8372D]/20 active:scale-95 transition"
-          >
-            <span>🚨</span>
-            <span className="hidden sm:inline">पशु बीमार है (Report)</span>
-            <span className="sm:hidden">Report</span>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-base sm:text-lg font-black tracking-tight text-[#16261B] whitespace-nowrap">Jeev Rakshak</span>
+                <span className="hidden sm:inline-block text-[10px] font-extrabold uppercase tracking-wider bg-[#DCEFE1] text-[#2E7D46] px-2 py-0.5 rounded-full">
+                  Surveillance Grid
+                </span>
+              </div>
+              <p className="hidden sm:block text-[11px] font-semibold text-[#5B6B5F] -mt-0.5 truncate">
+                जीव रक्षा • AI Livestock Health & Early Warning
+              </p>
+            </div>
           </Link>
+
+          {/* Desktop Center Links */}
+          <div className="hidden lg:flex items-center gap-1 bg-[#EEF2EA] p-1 rounded-xl border border-[#D5DDD0]">
+            <Link
+              href="/"
+              className="px-3 py-1.5 text-xs font-bold text-[#16261B] hover:bg-white rounded-lg transition"
+            >
+              Home (होम)
+            </Link>
+            <Link
+              href="/about"
+              className="px-3 py-1.5 text-xs font-bold text-[#5B6B5F] hover:text-[#16261B] hover:bg-white rounded-lg transition"
+            >
+              About Us (टीम परिचय)
+            </Link>
+            <a
+              href="#first-aid"
+              className="px-3 py-1.5 text-xs font-bold text-[#5B6B5F] hover:text-[#16261B] hover:bg-white rounded-lg transition"
+            >
+              प्राथमिक उपचार (First Aid)
+            </a>
+            <a
+              href="#surveillance"
+              className="px-3 py-1.5 text-xs font-bold text-[#5B6B5F] hover:text-[#16261B] hover:bg-white rounded-lg transition"
+            >
+              रोग निगरानी (Surveillance)
+            </a>
+            <a
+              href="#portals"
+              className="px-3 py-1.5 text-xs font-bold text-[#5B6B5F] hover:text-[#16261B] hover:bg-white rounded-lg transition"
+            >
+              पोर्टल (Portals)
+            </a>
+          </div>
+
+          {/* Auth & Actions */}
+          <div className="flex items-center gap-2 shrink-0">
+            {!user ? (
+              <>
+                <Link
+                  href="/login"
+                  className="hidden sm:inline-flex text-xs font-bold text-[#16261B] hover:text-[#2E7D46] px-3 py-2 rounded-xl transition"
+                >
+                  Sign In (लॉग इन)
+                </Link>
+                <Link
+                  href="/register"
+                  className="hidden md:inline-flex items-center text-xs font-bold text-[#2E7D46] bg-[#DCEFE1] hover:bg-[#DCEFE1]/80 px-3.5 py-2 rounded-xl transition"
+                >
+                  Create Account
+                </Link>
+              </>
+            ) : (
+              <Link
+                href={user.role === "FARMER" ? "/farmer/report" : "/dashboard"}
+                className="hidden sm:inline-flex text-xs font-bold text-[#2E7D46] bg-[#DCEFE1] px-3 py-2 rounded-xl"
+              >
+                {user.role === "FARMER" ? "🌾 Farmer Portal" : "🩺 Dashboard"}
+              </Link>
+            )}
+
+            {/* Quick Emergency Report Button */}
+            <Link
+              href="/farmer/report"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-[#C8372D] hover:bg-[#B32D24] text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-md shadow-[#C8372D]/20 active:scale-95 transition shrink-0"
+            >
+              <span>🚨</span>
+              <span className="hidden sm:inline">पशु बीमार है (Report)</span>
+              <span className="sm:hidden font-bold">Report</span>
+            </Link>
+
+            {/* Mobile Hamburger Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-[#EEF2EA] text-[#16261B] hover:bg-[#DCEFE1] active:scale-95 transition border border-[#D5DDD0] cursor-pointer shrink-0 touch-manipulation select-none"
+              aria-label="Toggle navigation menu"
+              aria-expanded={isMobileMenuOpen}
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5 text-red-600" /> : <Menu className="w-5 h-5 text-[#16261B]" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Dropdown Menu Drawer */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden mt-3 pt-3 border-t border-[#D5DDD0] space-y-2 max-h-[calc(100vh-5rem)] overflow-y-auto pb-4 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="grid grid-cols-2 gap-2 pb-2">
+              <Link
+                href="/"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-white text-[#16261B] font-bold text-xs border border-[#D5DDD0] hover:bg-[#DCEFE1]"
+              >
+                <Home className="w-4 h-4 text-[#2E7D46]" />
+                <span>Home (होम)</span>
+              </Link>
+              <Link
+                href="/about"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-white text-[#16261B] font-bold text-xs border border-[#D5DDD0] hover:bg-[#DCEFE1]"
+              >
+                <Info className="w-4 h-4 text-amber-600" />
+                <span>About Us (टीम परिचय)</span>
+              </Link>
+              <a
+                href="#first-aid"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-white text-[#16261B] font-bold text-xs border border-[#D5DDD0] hover:bg-[#DCEFE1]"
+              >
+                <span>🩺 First Aid (उपचार)</span>
+              </a>
+              <a
+                href="#surveillance"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-white text-[#16261B] font-bold text-xs border border-[#D5DDD0] hover:bg-[#DCEFE1]"
+              >
+                <span>📡 Surveillance</span>
+              </a>
+              <a
+                href="#portals"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-white text-[#16261B] font-bold text-xs border border-[#D5DDD0] hover:bg-[#DCEFE1]"
+              >
+                <span>🏛️ All Portals</span>
+              </a>
+              <Link
+                href={ivrHref}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 text-emerald-900 font-bold text-xs border border-emerald-200"
+              >
+                <span>📞 1800 IVR Call</span>
+              </Link>
+              <Link
+                href={photoDetectHref}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-amber-50 text-amber-900 font-bold text-xs border border-amber-200 col-span-2"
+              >
+                <span>📷 चोट की फोटो से जांच (Photo Wound AI)</span>
+              </Link>
+            </div>
+
+            {/* Mobile Auth row */}
+            <div className="pt-2 border-t border-[#D5DDD0] flex items-center gap-2">
+              {!user ? (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex-1 py-2 text-center text-xs font-bold text-[#16261B] bg-white rounded-xl border border-[#D5DDD0]"
+                  >
+                    Sign In (लॉग इन)
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex-1 py-2 text-center text-xs font-bold text-[#2E7D46] bg-[#DCEFE1] rounded-xl border border-[#2E7D46]/20"
+                  >
+                    Create Account
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  href={user.role === "FARMER" ? "/farmer/report" : "/dashboard"}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full py-2 text-center text-xs font-bold text-[#2E7D46] bg-[#DCEFE1] rounded-xl"
+                >
+                  {user.role === "FARMER" ? "🌾 Open Farmer Portal" : "🩺 Open Authority Dashboard"}
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* ── HERO SECTION ── */}
@@ -587,6 +715,84 @@ export default function HomeLandingPage() {
         </div>
       </section>
 
+      {/* ── ABOUT US SECTION ── */}
+      <section id="about" className="py-16 px-4 sm:px-8 bg-white border-t border-[#D5DDD0]">
+        <div className="max-w-6xl mx-auto space-y-10">
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-[#2E7D46] bg-[#DCEFE1] px-3 py-1 rounded-full">
+              About The Initiative • हमारे बारे में
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black text-[#16261B] tracking-tight">
+              Pashu Rakshak (Jeev Rakshak)
+            </h2>
+            <p className="text-sm sm:text-base text-[#5B6B5F] font-semibold leading-relaxed">
+              Real-time syndromic disease early warning and veterinary emergency response ecosystem.
+              Built for <strong>Smart India Hackathon Problem Statement SIH26128</strong> in collaboration
+              with the <strong>Government of Maharashtra Animal Husbandry Department</strong>.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 rounded-3xl bg-[#EEF2EA] border border-[#D5DDD0] space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-[#2E7D46] text-white flex items-center justify-center text-2xl shadow-md shadow-[#2E7D46]/20">
+                🌾
+              </div>
+              <h3 className="text-lg font-black text-[#16261B]">किसानों के लिए (For Livestock Keepers)</h3>
+              <p className="text-xs sm:text-sm text-[#5B6B5F] font-medium leading-relaxed">
+                Report cattle illness via 24x7 web portal, multilingual voice assistants (Marathi/Hindi),
+                camera wound triage, or free 1800 IVR phone calls without needing internet.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-[#EEF2EA] border border-[#D5DDD0] space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-[#C8372D] text-white flex items-center justify-center text-2xl shadow-md shadow-[#C8372D]/20">
+                🩺
+              </div>
+              <h3 className="text-lg font-black text-[#16261B]">पशु चिकित्सकों के लिए (For Veterinarians)</h3>
+              <p className="text-xs sm:text-sm text-[#5B6B5F] font-medium leading-relaxed">
+                Prioritized triage queues with explainable AI syndromic analysis, photo pathology notes,
+                rapid field visit dispatches, treatment prescription tracking, and lab sample referrals.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-[#EEF2EA] border border-[#D5DDD0] space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-[#1B4328] text-white flex items-center justify-center text-2xl shadow-md shadow-[#1B4328]/20">
+                🏛️
+              </div>
+              <h3 className="text-lg font-black text-[#16261B]">प्रशासन के लिए (For State Authorities)</h3>
+              <p className="text-xs sm:text-sm text-[#5B6B5F] font-medium leading-relaxed">
+                Server-enforced jurisdiction filtering across State, District, and Taluka levels.
+                Outbreak containment ring vaccination planning, multi-channel broadcast alerts, and bulletin generation.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-gradient-to-r from-[#183921] to-[#2E7D46] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+            <div className="space-y-1 text-center sm:text-left">
+              <span className="text-[10px] uppercase font-black tracking-wider bg-white/20 px-2 py-0.5 rounded-full">
+                SIH Problem Statement SIH26128
+              </span>
+              <h4 className="text-lg font-black">Ready to report a case or inspect surveillance telemetry?</h4>
+              <p className="text-xs text-white/80">Choose your role or test any of our automated tools now.</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href="/farmer/report"
+                className="px-4 py-2.5 rounded-xl bg-white text-[#183921] font-black text-xs hover:bg-emerald-50 transition shadow-sm"
+              >
+                Farmer Portal →
+              </Link>
+              <Link
+                href="/dashboard"
+                className="px-4 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-black text-xs transition border border-white/20"
+              >
+                Admin Command Center →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── FOOTER ── */}
       <footer className="bg-[#16261B] text-white py-12 px-4 sm:px-8">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
@@ -601,6 +807,9 @@ export default function HomeLandingPage() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-white/80">
+            <Link href="/about" className="hover:text-white transition text-[#FBEFCF]">
+              About Us / Hackathon Team (टीम परिचय)
+            </Link>
             <Link href="/farmer/report" className="hover:text-white transition">
               Report Illness (रोग रिपोर्ट)
             </Link>
