@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateNumericOtp, hashOtp, sendOtpSms } from "@/lib/sms";
 import { findOtpAttempt, saveOtpAttempt } from "@/lib/otp-db";
+import { createOtpChallengeToken } from "@/lib/otp-token";
 
 function normalizeIndianPhone(rawPhone: string): string | null {
   const digits = rawPhone.replace(/\D/g, "");
@@ -65,14 +66,32 @@ export async function POST(req: Request) {
     // Send SMS via mock/live provider
     const sendResult = await sendOtpSms(phone, otp);
 
-    return NextResponse.json({
+    // Create stateless challenge token for cross-lambda resilience on Vercel
+    const challengeToken = createOtpChallengeToken({
+      phone,
+      hashedCode,
+      expiresAt: expiresAt.getTime(),
+    });
+
+    const response = NextResponse.json({
       success: true,
       message: "6-digit OTP sent successfully.",
       phone: `+91 ${phone}`,
       expiresInSeconds: 300,
       cooldownSeconds: 30,
-      debugOtp: sendResult.debugOtp, // provided in dev mode for testing convenience
+      debugOtp: sendResult.debugOtp, // provided in dev mode or mock mode for testing convenience
+      otpChallengeToken: challengeToken,
     });
+
+    response.cookies.set("jeevraksha_otp_challenge", challengeToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 300, // 5 minutes
+      path: "/",
+    });
+
+    return response;
   } catch (err: any) {
     console.error("Error in /api/auth/otp/send:", err);
     return NextResponse.json(

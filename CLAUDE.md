@@ -181,6 +181,28 @@
 
 ---
 
+### 13. Vercel Serverless Deployment & Mobile OTP Authentication Fix
+- **Root Cause Analysis:**
+  - Vercel serverless functions mount the application bundle as a **read-only filesystem** (`SQLITE_READONLY` / `EROFS`). Any direct write (`INSERT`/`UPDATE`) to `prisma/dev.db` failed with status 500 (*"Failed to send OTP"*).
+  - In production (`NODE_ENV === "production"`), mock SMS suppressed `debugOtp`, blocking OTP login on deployed URLs when third-party SMS gateway credentials (e.g. Twilio) were absent.
+- **Architecture & Resilience Solution:**
+  - **Stateless HMAC Challenge Tokens (`src/lib/otp-token.ts`):**
+    - Issues cryptographic HMAC-SHA256 signed challenge tokens containing `{ phone, hashedCode, expiresAt }`.
+    - Sent via both HTTP-Only cookie (`jeevraksha_otp_challenge`) and response JSON payload (`otpChallengeToken`).
+    - Solves cross-lambda serverless routing where separate AWS Lambda containers verify requests without shared state.
+  - **Resilient Multi-Tier OTP Store (`src/lib/otp-db.ts`):**
+    - In-memory store on `globalThis` handles immediate zero-latency verification.
+    - Database operations are wrapped in non-fatal `try/catch` blocks so DB read-only states never crash the OTP service.
+  - **Writable `/tmp/dev.db` Migration on Vercel (`src/lib/prisma.ts`):**
+    - Automatically detects Vercel serverless environment (`process.env.VERCEL`).
+    - Copies seeded `prisma/dev.db` (and `-wal`/`-shm`) to writable `/tmp/dev.db` on cold-start and points Prisma datasources dynamically.
+  - **Deploy-Ready Demo OTP (`src/lib/sms.ts`):**
+    - When `SMS_PROVIDER="mock"` (or without active SMS gateway API keys), returns `debugOtp` so testers and evaluators can view and 1-click `[Fill]` the demo OTP on live Vercel deployments.
+  - **Serverless Asset Tracing (`next.config.ts`):**
+    - Configured `outputFileTracingIncludes: { "/api/**/*": ["./prisma/dev.db"] }` to ensure Next.js NFT bundles the SQLite database into Vercel Lambda functions.
+
+---
+
 ## 📁 Key File Map
 
 | Path | Description |
@@ -189,7 +211,9 @@
 | `SIGNUP_REQUIREMENTS.md` | Pashu Rakshak user roles, onboarding flow, and approval criteria |
 | `src/lib/jurisdiction.ts` | Server-side jurisdiction filter engine for State, District & Taluka officers |
 | `src/lib/sms.ts` | Mock & production SMS / Voice OTP provider abstraction |
+| `src/lib/otp-token.ts` | Stateless HMAC-SHA256 challenge token generation & verification |
 | `src/lib/otp-db.ts` | Cryptographic OTP generation, rate limiting, and verification engine |
+| `src/lib/prisma.ts` | Multi-environment Prisma client supporting Vercel /tmp SQLite replication |
 | `src/app/api/auth/otp/` | Phone OTP send, verify, and voice call endpoints |
 | `src/app/api/signup/` | Farmer 6-step registration and Veterinarian document submission endpoints |
 | `src/app/api/admin/users/` | Admin pending review queries and vet license approval/rejection endpoints |
@@ -206,5 +230,6 @@
 | `src/app/dashboard/page.tsx` | Admin Surveillance Command Center (Heatmap, alerts, and telemetry) |
 | `src/app/dashboard/cases/` | Vet case management and clinical triage |
 | `prisma/schema.prisma` | Extended database schema with roles, statuses, profiles, and health records |
-| `next.config.ts` | Next.js configuration with allowedDevOrigins for local Wi-Fi testing |
+| `next.config.ts` | Next.js configuration with allowedDevOrigins and Vercel asset tracing |
+
 

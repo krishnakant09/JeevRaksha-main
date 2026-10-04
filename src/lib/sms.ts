@@ -58,7 +58,7 @@ export async function sendOtpSms(phone: string, otp: string): Promise<SmsProvide
     return {
       success: true,
       messageId: `mock_${Date.now()}`,
-      debugOtp: isDev ? otp : undefined,
+      debugOtp: otp, // Return OTP in mock mode so testing works on deployed environments like Vercel
     };
   }
 
@@ -78,6 +78,7 @@ export async function sendOtpSms(phone: string, otp: string): Promise<SmsProvide
  */
 export async function sendOtpVoiceCall(phone: string, otp: string): Promise<SmsProviderResult> {
   const isDev = process.env.NODE_ENV !== "production";
+  const provider = process.env.SMS_PROVIDER || "mock";
 
   console.log(`\n==================================================`);
   console.log(`📞 [VOICE OTP CALL - SIMULATION]`);
@@ -89,6 +90,6 @@ export async function sendOtpVoiceCall(phone: string, otp: string): Promise<SmsP
   return {
     success: true,
     messageId: `voice_mock_${Date.now()}`,
-    debugOtp: isDev ? otp : undefined,
+    debugOtp: provider === "mock" ? otp : isDev ? otp : undefined,
   };
 }

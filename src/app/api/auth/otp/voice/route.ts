@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateNumericOtp, hashOtp, sendOtpVoiceCall } from "@/lib/sms";
 import { findOtpAttempt, saveOtpAttempt } from "@/lib/otp-db";
+import { createOtpChallengeToken } from "@/lib/otp-token";
 
 function normalizeIndianPhone(rawPhone: string): string | null {
   const digits = rawPhone.replace(/\D/g, "");
@@ -47,14 +48,31 @@ export async function POST(req: Request) {
 
     const voiceResult = await sendOtpVoiceCall(phone, otp);
 
-    return NextResponse.json({
+    const challengeToken = createOtpChallengeToken({
+      phone,
+      hashedCode,
+      expiresAt: expiresAt.getTime(),
+    });
+
+    const response = NextResponse.json({
       success: true,
       message: "Voice call initiated. You will receive a call with the OTP momentarily.",
       phone: `+91 ${phone}`,
       expiresInSeconds: 300,
       cooldownSeconds: 30,
       debugOtp: voiceResult.debugOtp,
+      otpChallengeToken: challengeToken,
     });
+
+    response.cookies.set("jeevraksha_otp_challenge", challengeToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 300, // 5 minutes
+      path: "/",
+    });
+
+    return response;
   } catch (err: any) {
     console.error("Error in /api/auth/otp/voice:", err);
     return NextResponse.json(

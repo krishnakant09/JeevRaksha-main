@@ -42,6 +42,7 @@ function LoginForm() {
   const [otpSent, setOtpSent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [debugOtp, setDebugOtp] = useState<string | null>(null);
+  const [otpChallengeToken, setOtpChallengeToken] = useState<string | null>(null);
 
   // Email / Password state
   const [email, setEmail] = useState("");
@@ -84,6 +85,7 @@ function LoginForm() {
     setOtpSent(false);
     setOtp("");
     setDebugOtp(null);
+    setOtpChallengeToken(null);
   };
 
   // Helper: Verify if account matches the portal and determine destination
@@ -174,6 +176,7 @@ function LoginForm() {
       setOtpSent(true);
       setCooldown(data.cooldownSeconds || 30);
       if (data.debugOtp) setDebugOtp(data.debugOtp);
+      if (data.otpChallengeToken) setOtpChallengeToken(data.otpChallengeToken);
     } catch {
       setError("Network error while sending OTP.");
     } finally {
@@ -196,7 +199,11 @@ function LoginForm() {
       const res = await fetch("/api/auth/otp/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: phone.replace(/\D/g, ""), otp }),
+        body: JSON.stringify({
+          phone: phone.replace(/\D/g, ""),
+          otp,
+          otpChallengeToken,
+        }),
       });
       const data = await res.json();
 
@@ -251,6 +258,7 @@ function LoginForm() {
       } else {
         setCooldown(30);
         if (data.debugOtp) setDebugOtp(data.debugOtp);
+        if (data.otpChallengeToken) setOtpChallengeToken(data.otpChallengeToken);
       }
     } catch {
       setError("Failed to trigger voice call.");

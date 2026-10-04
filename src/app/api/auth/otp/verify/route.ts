@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyOtpHash } from "@/lib/sms";
 import { findOtpAttempt, removeOtpAttempt } from "@/lib/otp-db";
+import { verifyOtpChallengeToken } from "@/lib/otp-token";
 import crypto from "crypto";
 
 function normalizeIndianPhone(rawPhone: string): string | null {
@@ -33,8 +34,29 @@ export async function POST(req: Request) {
       );
     }
 
-    // Find OTP attempt record
-    const attempt = await findOtpAttempt(phone);
+    // Find OTP attempt record from memory or database
+    let attempt = await findOtpAttempt(phone);
+
+    // If not found in DB or memory (e.g. serverless stateless request across instances), check challenge token
+    if (!attempt) {
+      const cookieHeader = req.headers.get("cookie") || "";
+      const cookieTokenMatch = cookieHeader.match(/jeevraksha_otp_challenge=([^;]+)/);
+      const tokenCandidate = body.otpChallengeToken || (cookieTokenMatch ? cookieTokenMatch[1] : null);
+
+      if (tokenCandidate) {
+        const decoded = verifyOtpChallengeToken(tokenCandidate);
+        if (decoded && decoded.phone === phone) {
+          attempt = {
+            id: `token_${Date.now()}`,
+            phone: decoded.phone,
+            hashedCode: decoded.hashedCode,
+            expiresAt: new Date(decoded.expiresAt),
+            attempts: 1,
+            createdAt: new Date(),
+          };
+        }
+      }
+    }
 
     if (!attempt) {
       return NextResponse.json(
@@ -109,7 +131,7 @@ export async function POST(req: Request) {
         },
       }).catch(() => {});
 
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         isNew: false,
         token,
@@ -127,16 +149,20 @@ export async function POST(req: Request) {
           vetProfile: existingUser.vetProfile,
         },
       });
+      response.cookies.delete("jeevraksha_otp_challenge");
+      return response;
     }
 
     // User is new: allow client to proceed to role and detail collection
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       isNew: true,
       phone,
       token,
       message: "Phone verified successfully. Please proceed with account details.",
     });
+    response.cookies.delete("jeevraksha_otp_challenge");
+    return response;
   } catch (err: any) {
     console.error("Error in /api/auth/otp/verify:", err);
     return NextResponse.json(

@@ -307,6 +307,7 @@ export default function RegisterPage() {
   const [otp, setOtp] = useState("");
   const [authToken, setAuthToken] = useState("");
   const [debugOtp, setDebugOtp] = useState<string | null>(null);
+  const [otpChallengeToken, setOtpChallengeToken] = useState<string | null>(null);
 
   // Timers and loading states
   const [cooldown, setCooldown] = useState(0);
@@ -519,6 +520,7 @@ export default function RegisterPage() {
 
       setCooldown(data.cooldownSeconds || 30);
       if (data.debugOtp) setDebugOtp(data.debugOtp);
+      if (data.otpChallengeToken) setOtpChallengeToken(data.otpChallengeToken);
       setStep("otp");
     } catch {
       setError("Network error. Please try again.");
@@ -545,6 +547,7 @@ export default function RegisterPage() {
       } else {
         setCooldown(30);
         if (data.debugOtp) setDebugOtp(data.debugOtp);
+        if (data.otpChallengeToken) setOtpChallengeToken(data.otpChallengeToken);
       }
     } catch {
       setError("Failed to trigger voice call.");
@@ -566,7 +569,11 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/otp/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: phone.replace(/\D/g, ""), otp }),
+        body: JSON.stringify({
+          phone: phone.replace(/\D/g, ""),
+          otp,
+          otpChallengeToken,
+        }),
       });
       const data = await res.json();
 
