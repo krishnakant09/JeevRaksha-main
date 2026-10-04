@@ -97,21 +97,114 @@
 
 ---
 
+### 7. Pashu Rakshak Account Creation & Onboarding (SIGNUP_REQUIREMENTS.md)
+- **Multi-Step Multilingual Signup (`src/app/register/page.tsx`):**
+  - Interactive 6-step registration wizard supporting **मराठी (Marathi)**, **हिन्दी (Hindi)**, and **English**.
+  - One question per screen with high-contrast accessibility tokens for low-literacy farmers.
+  - Dedicated role selection: **Farmer (पशुपालक)** vs **Veterinary Doctor (पशु चिकित्सक)**.
+  - Farmer flow captures: basic profile, village jurisdiction, livestock count summary (cattle, buffalo, goat, sheep, poultry), and DPDP 2023 digital consent.
+  - Veterinarian flow captures: Veterinary Council registration number, state council name, clinic/dispensary address, and document certificate upload.
+- **Backend Signup APIs:**
+  - `POST /api/auth/otp/send`: Generates 6-digit cryptographic OTP with 30s cooldown and rate limiting.
+  - `POST /api/auth/otp/verify`: Verifies phone OTP and returns login token or registration state.
+  - `POST /api/auth/otp/voice`: Triggers voice telephony OTP fallback call.
+  - `POST /api/signup/farmer`: Persists Farmer profile, animal summaries, and DPDP digital consent.
+  - `POST /api/signup/vet`: Creates vet account with `PENDING_REVIEW` status awaiting government approval.
+  - `POST /api/uploads/certificate`: Secure local/cloud certificate upload pipeline.
+  - `GET & POST /api/invites/accept`: Invite-token onboarding engine for Government District & Taluka Officers.
+
+---
+
+### 8. Admin Verification Queue & Vet Approvals
+- **Verification Portal (`src/app/dashboard/approvals/page.tsx`):**
+  - Official queue for State and District Administrators to review newly registered veterinarians.
+  - Displays Council registration number, council name, registration date, and uploaded certificate documents.
+  - Provides 1-click **Approve License** and **Reject** dialogs with audit reasons.
+- **Backend Admin Approval APIs:**
+  - `GET /api/admin/users/pending`: Fetches unverified veterinarians filtered by officer jurisdiction.
+  - `POST /api/admin/users/[id]/approve`: Sets status to `APPROVED`, sends SMS activation notice, and grants clinical access.
+  - `POST /api/admin/users/[id]/reject`: Sets status to `REJECTED` with audit trail notes.
+
+---
+
+### 9. Strict Role-Based Portal Access Control (RBAC) & Boundary Isolation
+- **Portal-Aware Login (`src/app/login/page.tsx`):**
+  - Integrated 3-way portal switch: 🌾 **Farmer Portal**, 🩺 **Doctor Portal**, 🛡️ **Admin Command**.
+  - **Cross-Role Login Rejection:**
+    - Entering Admin credentials in Doctor Portal is blocked with an explicit error: *"Access Denied: This account has the role 'ADMIN'. Only licensed Veterinary Doctors can log into the Doctor Portal."*
+    - Prevents Admins from seeing clinical Case Management.
+    - Prevents non-officials from logging into Admin Command Center.
+    - Prevents non-farmers from logging into Farmer Portal.
+  - Dynamic role-tailored demo credentials quick-fill for each portal.
+  - Safe destination resolver guaranteeing users can only be redirected to their role's authorized URLs.
+- **Dashboard Layout Gatekeeper (`src/app/dashboard/layout.tsx`):**
+  - **Doctor-Only Routes** (`/dashboard/cases`, `/dashboard/alerts`, `/dashboard/lab`):
+    - Strictly blocks Administrators & Officers with an informative access roadblock and auto-redirects them to `/dashboard`.
+    - Holds unverified veterinarians on a *"Registration Under Review"* holding card until approved.
+  - **Admin-Only Routes** (`/dashboard`, `/dashboard/map`, `/dashboard/approvals`):
+    - Strictly redirects veterinarians to `/dashboard/cases`.
+  - **Farmer Lockout:**
+    - Any farmer attempting to access `/dashboard/*` is blocked and redirected to `/farmer/report`.
+- **Farmer Portal Root Layout (`src/app/farmer/layout.tsx`):**
+  - Enforces authentication and farmer role on all `/farmer/*` sub-routes.
+  - Displays informative role-mismatch cards with direct action buttons if accessed by logged-in Doctors or Admins.
+- **Admin Dashboard Cleanup (`src/app/dashboard/page.tsx`):**
+  - Replaced internal case links with administrative surveillance links (`/dashboard/map`, `/dashboard/approvals`).
+- **Landing Page Navigation (`src/app/page.tsx`):**
+  - Fixed portal card destinations and header buttons based on verified role (`isDoctor`, `isAdmin`, `isFarmer`).
+
+---
+
+### 10. Veterinary Appointments & 1962 Helpline Integration
+- **Route:** `/appointments` (`src/app/appointments/page.tsx` & `/api/appointments/route.ts`)
+- **Key Capabilities:**
+  - 1-click booking for veterinary clinic visits and emergency farm calls.
+  - Integrated 1962 Emergency Mobile Veterinary Unit (MVU) dispatch details.
+  - Fast dispensary scheduling with appointment status tracking (`PENDING`, `CONFIRMED`, `COMPLETED`).
+
+---
+
+### 11. About Us Page Overhaul (`src/app/about/page.tsx`)
+- **Uniform Team Member Cards:**
+  - Redesigned all member cards with **identical box dimensions** (`h-full`, equalized description heights, uniform skills clusters).
+  - Prominent **large portrait photos** (`h-72 sm:h-80`) with hover zoom, domain category badges, and initials fallbacks.
+  - Unified all 6 multidisciplinary team members into a balanced 3×2 grid (Krishnakant Sharma, Raj Verma, Aman Sharma, Ojash Dwivedi, Ompal, Ritika).
+  - Smart India Hackathon 2026 milestone banner and interactive domain filter tabs.
+
+---
+
+### 12. Local Network Access & HMR WebSocket Configuration
+- **Network Host Binding (`package.json`):**
+  - Configured `"dev": "next dev -H 0.0.0.0"` to listen on all interfaces for mobile testing over Wi-Fi.
+- **HMR Dev Origins (`next.config.ts`):**
+  - Added `allowedDevOrigins: ["192.168.29.160", "localhost", "127.0.0.1"]` to allow Next.js 16 Hot Module Replacement WebSockets without cross-origin handshake errors.
+
+---
+
 ## 📁 Key File Map
 
 | Path | Description |
 | :--- | :--- |
 | `ADMIN_PORTAL_REQUIREMENTS.md` | Full SIH26128 functional requirements, data model & build order |
+| `SIGNUP_REQUIREMENTS.md` | Pashu Rakshak user roles, onboarding flow, and approval criteria |
 | `src/lib/jurisdiction.ts` | Server-side jurisdiction filter engine for State, District & Taluka officers |
-| `src/app/api/overview/route.ts` | Server-enforced surveillance overview endpoint with jurisdiction filtering |
-| `src/app/api/draft-report/route.ts` | Multilingual NLP voice extraction API (Hindi/Marathi/English) |
+| `src/lib/sms.ts` | Mock & production SMS / Voice OTP provider abstraction |
+| `src/lib/otp-db.ts` | Cryptographic OTP generation, rate limiting, and verification engine |
+| `src/app/api/auth/otp/` | Phone OTP send, verify, and voice call endpoints |
+| `src/app/api/signup/` | Farmer 6-step registration and Veterinarian document submission endpoints |
+| `src/app/api/admin/users/` | Admin pending review queries and vet license approval/rejection endpoints |
+| `src/app/register/page.tsx` | Multilingual 6-step onboarding wizard for Farmers and Veterinarians |
+| `src/app/login/page.tsx` | 3-portal login with strict role validation and cross-portal barrier |
+| `src/app/dashboard/approvals/` | Admin verification queue for reviewing and approving veterinary licenses |
+| `src/app/dashboard/layout.tsx` | Strict RBAC barrier separating Doctor clinical triage from Admin command |
+| `src/app/farmer/layout.tsx` | Root security layout protecting farmer portal routes from unauthorized roles |
+| `src/app/appointments/` | Vet booking and 1962 mobile veterinary helpline interface |
+| `src/app/about/page.tsx` | Team presentation page with uniform large-photo cards and SIH26128 banner |
 | `src/app/farmer/report/page.tsx` | 4-step disease reporting wizard with Voice Form Assistant |
 | `src/app/farmer/photo-detect/page.tsx` | AI camera wound detection and triage page (Login protected) |
 | `src/app/farmer/ivr/page.tsx` | In-browser IVR helpline phone simulator (Login protected) |
 | `src/app/dashboard/page.tsx` | Admin Surveillance Command Center (Heatmap, alerts, and telemetry) |
-| `src/app/dashboard/cases/CasesList.tsx` | Vet case list showing attached photos and triage summaries |
-| `src/app/dashboard/layout.tsx` | Role-based navigation boundary (Veterinarian vs Officer vs Admin) |
-| `src/components/farmer/FarmerNav.tsx` | Farmer portal header and mobile navigation |
-| `src/components/ChatFAB.tsx` | Floating AI Vet Assistant chat (Hidden on report page & unauthenticated) |
-| `prisma/schema.prisma` | Database schema with jurisdiction, roles, status, and health models |
-| `prisma/seed.ts` | Synthetic Maharashtra livestock seed dataset (Pune, Satara, Haveli) |
+| `src/app/dashboard/cases/` | Vet case management and clinical triage |
+| `prisma/schema.prisma` | Extended database schema with roles, statuses, profiles, and health records |
+| `next.config.ts` | Next.js configuration with allowedDevOrigins for local Wi-Fi testing |
+
