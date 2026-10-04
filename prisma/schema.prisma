@@ -8,12 +8,14 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  email         String         @unique
-  name          String?
-  password      String
+  id                    String         @id @default(cuid())
+  email                 String?        @unique
+  phone                 String?        @unique
+  name                  String?
+  password              String?
   role                  String         @default("FARMER") // FARMER, VETERINARIAN, FIELD_WORKER, LABORATORY, ADMIN, STATE_OFFICER, DISTRICT_OFFICER, TALUKA_OFFICER
-  status                String         @default("APPROVED") // PENDING, APPROVED, REJECTED, SUSPENDED
+  status                String         @default("APPROVED") // PENDING, APPROVED, REJECTED, SUSPENDED, PENDING_REVIEW
+  language              String         @default("mr") // mr, hi, en
   registrationNo        String?
   jurisdictionLevel     String         @default("STATE") // STATE, DISTRICT, TALUKA, VILLAGE
   jurisdictionState     String         @default("Maharashtra")
@@ -26,6 +28,13 @@ model User {
   fieldVisits           FieldVisit[]   @relation("FieldWorker")
   casesAssigned         Case[]         @relation("VetAssigned")
   samplesProcessed      Sample[]       @relation("LabUser")
+
+  // Relations for signup requirements
+  farmerProfile         FarmerProfile?
+  vetProfile            VetProfile?
+  animalsSummary        AnimalSummary[]
+  consents              Consent[]
+  invitesCreated        Invite[]       @relation("InvitedBy")
 }
 
 model Animal {
@@ -204,3 +213,76 @@ model AuditLog {
   details         String
   createdAt       DateTime @default(now())
 }
+
+model OtpAttempt {
+  id         String   @id @default(cuid())
+  phone      String   @unique
+  hashedCode String
+  expiresAt  DateTime
+  attempts   Int      @default(0)
+  createdAt  DateTime @default(now())
+}
+
+model FarmerProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  village   String?
+  taluka    String
+  district  String
+  createdAt DateTime @default(now())
+}
+
+model AnimalSummary {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  species   String   // cow, buffalo, goat, sheep, poultry
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model VetProfile {
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vetType            String    @default("VET") // VET or PARA_VET
+  registrationNo     String
+  council            String
+  certificateFileId  String?
+  certificateUrl     String?
+  serviceDistrict    String
+  serviceTaluka      String
+  serviceVillages    String?   // comma-separated or JSON
+  languages          String?   // comma-separated e.g. "mr,hi,en"
+  availability       String?
+  reviewedBy         String?
+  reviewedAt         DateTime?
+  rejectionReason    String?
+  createdAt          DateTime  @default(now())
+}
+
+model Consent {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // "DATA_TREATMENT" | "MEDIA_LOCATION_SHARING"
+  accepted    Boolean  @default(true)
+  textVersion String   @default("1.0")
+  acceptedAt  DateTime @default(now())
+}
+
+model Invite {
+  id                   String    @id @default(cuid())
+  code                 String    @unique
+  role                 String    // STATE_OFFICER, DISTRICT_OFFICER, TALUKA_OFFICER
+  jurisdictionDistrict String?
+  jurisdictionTaluka   String?
+  createdById          String?
+  createdBy            User?     @relation("InvitedBy", fields: [createdById], references: [id])
+  expiresAt            DateTime
+  usedAt               DateTime?
+  usedByPhone          String?
+  createdAt            DateTime  @default(now())
+}
+

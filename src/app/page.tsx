@@ -155,12 +155,20 @@ export default function HomeLandingPage() {
     }, 200);
   };
 
-  const isDoctor = user && (user.role === "VETERINARIAN" || user.role === "ADMIN");
-  const isAdmin = user && user.role === "ADMIN";
+  const isDoctor = user?.role === "VETERINARIAN";
+  const isAdmin =
+    user &&
+    (user.role === "ADMIN" ||
+      user.role === "STATE_OFFICER" ||
+      user.role === "DISTRICT_OFFICER" ||
+      user.role === "TALUKA_OFFICER");
+  const isFarmer = user?.role === "FARMER";
+
+  const farmerPortalHref = isFarmer ? "/farmer/report" : "/login?role=farmer&redirect=/farmer/report";
   const doctorPortalHref = isDoctor ? "/dashboard/cases" : "/login?role=vet&redirect=/dashboard/cases";
   const adminPortalHref = isAdmin ? "/dashboard" : "/login?role=admin&redirect=/dashboard";
-  const ivrHref = user ? "/farmer/ivr" : "/login?role=farmer&redirect=/farmer/ivr";
-  const photoDetectHref = user ? "/farmer/photo-detect" : "/login?role=farmer&redirect=/farmer/photo-detect";
+  const ivrHref = isFarmer ? "/farmer/ivr" : "/login?role=farmer&redirect=/farmer/ivr";
+  const photoDetectHref = isFarmer ? "/farmer/photo-detect" : "/login?role=farmer&redirect=/farmer/photo-detect";
 
   const activeGuide = SYMPTOM_GUIDE_ITEMS[selectedGuideIndex];
 
@@ -495,7 +503,7 @@ export default function HomeLandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* 1. FARMER PORTAL */}
               <Link
-                href="/farmer/report"
+                href={farmerPortalHref}
                 className="group relative bg-[#F2F9F4] hover:bg-white text-[#16261B] rounded-2xl p-5 border-4 border-[#2E7D46] shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-1 flex flex-col justify-between active:scale-[0.98]"
               >
                 <div>
@@ -946,7 +954,7 @@ export default function HomeLandingPage() {
 
             <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs font-semibold text-white/80">
               <Link href="/about" className="hover:text-white transition text-[#FBEFCF]">
-                About Us / Hackathon Team (टीम परिचय)
+                About Us (टीम परिचय)
               </Link>
               <Link href="/appointments" className="hover:text-white transition">
                 Connect with Vet (डॉक्टर)
@@ -965,7 +973,7 @@ export default function HomeLandingPage() {
 
           <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-[11px] text-white/40">
             <div>
-              Built with ❤️ for Indian Farmers & Veterinary Officers • SIH26128
+              Built with ❤️ for Indian Farmers & Veterinary Officers
             </div>
             <div>
               © {new Date().getFullYear()} Pashu Rakshak / JeevRaksha. Built for India&apos;s rural animal husbandry ecosystem.

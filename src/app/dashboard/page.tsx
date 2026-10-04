@@ -348,16 +348,16 @@ export default async function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <Link
-                href="/dashboard/cases"
+                href="/dashboard/map"
                 className="text-xs font-bold px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition"
               >
-                Assign Field Team
+                Field Geospatial
               </Link>
               <Link
-                href="/dashboard/lab"
+                href="/dashboard/approvals"
                 className="text-xs font-bold px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition"
               >
-                Lab Diagnostics
+                Vet Approvals
               </Link>
             </div>
           </div>
@@ -402,10 +402,10 @@ export default async function Dashboard() {
 
           <div className="mt-6 pt-4 border-t border-gray-100">
             <Link
-              href="/dashboard/cases"
+              href="/dashboard/map"
               className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center justify-between"
             >
-              <span>Explore Case Records</span>
+              <span>Explore Geospatial Outbreak Map</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -423,10 +423,10 @@ export default async function Dashboard() {
                 <p className="text-xs text-gray-400 mt-0.5">Live surveillance telemetry from field cases</p>
               </div>
               <Link
-                href="/dashboard/cases"
+                href="/dashboard/map"
                 className="text-xs font-bold text-violet-700 hover:text-violet-800 flex items-center gap-1"
               >
-                <span>View All Cases</span>
+                <span>View Outbreak Map</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -500,10 +500,10 @@ export default async function Dashboard() {
                         {r.riskLevel} · {r.riskScore}/100
                       </span>
                       <Link
-                        href={`/dashboard/cases`}
+                        href={`/dashboard/map`}
                         className="text-xs font-bold text-violet-600 hover:text-violet-800 hover:underline"
                       >
-                        Triage Case →
+                        GIS Map View →
                       </Link>
                     </div>
                   </div>
@@ -514,8 +514,8 @@ export default async function Dashboard() {
 
           <div className="p-4 bg-gray-50/70 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-medium">
             <span>Automated NLP & Triage via Sarvam 105B Indic Model</span>
-            <Link href="/dashboard/cases" className="text-violet-700 font-bold hover:underline">
-              Review Case Triage Queue →
+            <Link href="/dashboard/map" className="text-violet-700 font-bold hover:underline">
+              Review Hotspot Map →
             </Link>
           </div>
         </div>
@@ -544,16 +544,16 @@ export default async function Dashboard() {
               Open Outbreak Map
             </Link>
             <Link
-              href="/dashboard/cases"
+              href="/dashboard/map"
               className="px-4 py-2.5 rounded-xl text-xs font-bold bg-violet-700 hover:bg-violet-600 text-white transition border border-violet-500/40"
             >
-              Assign Field Visit
+              Surveillance Grid
             </Link>
             <Link
-              href="/dashboard/lab"
+              href="/dashboard/approvals"
               className="px-4 py-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white transition border border-white/20"
             >
-              Lab Pathology
+              Vet Verifications
             </Link>
           </div>
         </div>
