@@ -117,6 +117,44 @@ export default function HomeLandingPage() {
     }
   }, []);
 
+  // Lock background scroll on mobile when drawer is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
+  // Handle escape key and screen resize
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsMobileMenuOpen(false);
+    };
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) setIsMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const handleAnchorClick = (id: string) => {
+    setIsMobileMenuOpen(false);
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 200);
+  };
+
   const isDoctor = user && (user.role === "VETERINARIAN" || user.role === "ADMIN");
   const isAdmin = user && user.role === "ADMIN";
   const doctorPortalHref = isDoctor ? "/dashboard/cases" : "/login?role=vet&redirect=/dashboard/cases";
@@ -128,18 +166,209 @@ export default function HomeLandingPage() {
 
   return (
     <div className="min-h-screen bg-[#EEF2EA] text-[#16261B] overflow-x-hidden">
-      {/* Mobile Drawer Backdrop Overlay */}
-      {isMobileMenuOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-xs z-40 transition-opacity"
-          onClick={() => setIsMobileMenuOpen(false)}
-          aria-hidden="true"
-        />
-      )}
+      {/* ── MOBILE DRAWER BACKDROP ── */}
+      <div
+        className={`lg:hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 transition-opacity duration-300 ${
+          isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setIsMobileMenuOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* ── MOBILE SLIDE-OVER DRAWER ── */}
+      <aside
+        id="mobile-navigation-drawer"
+        aria-label="Mobile Navigation"
+        className={`lg:hidden fixed top-0 right-0 bottom-0 w-[86vw] max-w-sm bg-white z-50 shadow-2xl flex flex-col border-l border-[#D5DDD0] transition-transform duration-300 ease-in-out ${
+          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Drawer Header */}
+        <div className="p-4 border-b border-[#D5DDD0] bg-[#F7F9F5] flex items-center justify-between gap-2 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#1B4328] via-[#2E7D46] to-[#3B9B58] flex items-center justify-center text-white shadow-md shadow-[#2E7D46]/20">
+              <span className="text-lg">🐄</span>
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-base font-black tracking-tight text-[#16261B]">Jeev Rakshak</span>
+                <span className="text-[9px] font-black uppercase tracking-wider bg-[#DCEFE1] text-[#2E7D46] px-1.5 py-0.5 rounded">
+                  SIH26128
+                </span>
+              </div>
+              <p className="text-[10px] font-semibold text-[#5B6B5F]">
+                AI Livestock Surveillance Grid
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-white hover:bg-gray-100 text-gray-700 hover:text-red-600 transition border border-[#D5DDD0] cursor-pointer active:scale-95 touch-manipulation"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5 text-gray-700" />
+          </button>
+        </div>
+
+        {/* Drawer Scrollable Content */}
+        <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3">
+          {/* Emergency Triage CTA */}
+          <Link
+            href="/farmer/report"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-[#C8372D] to-[#E04F44] text-white shadow-lg shadow-[#C8372D]/20 active:scale-98 transition group"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl animate-bounce">🚨</span>
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-wide text-red-100">Emergency Disease Report</p>
+                <p className="text-sm font-extrabold">पशु बीमार है (Report Sickness)</p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-white/80 group-hover:translate-x-1 transition-transform" />
+          </Link>
+
+          {/* Connect with Vet Feature Card */}
+          <Link
+            href="/appointments"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 to-[#DCEFE1] border border-emerald-200 text-[#16261B] shadow-xs active:scale-98 transition group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#2E7D46] text-white flex items-center justify-center shadow-xs">
+                <Stethoscope className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs font-extrabold text-[#2E7D46]">डॉक्टर अपॉइंटमेंट</p>
+                  <span className="text-[9px] font-black uppercase px-1.5 py-0.2 bg-[#2E7D46] text-white rounded-full">
+                    NEW
+                  </span>
+                </div>
+                <p className="text-xs font-bold text-[#16261B]">Connect with Vet (1962)</p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#2E7D46] group-hover:translate-x-1 transition-transform" />
+          </Link>
+
+          {/* Main Navigation Links */}
+          <div className="space-y-1.5 pt-1">
+            <p className="text-[10px] font-black uppercase tracking-wider text-[#5B6B5F] px-1">Navigation (नेविगेशन)</p>
+
+            <Link
+              href="/"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-xl bg-white hover:bg-[#EEF2EA] text-[#16261B] font-bold text-xs border border-[#D5DDD0] transition"
+            >
+              <Home className="w-4 h-4 text-[#2E7D46]" />
+              <span>Home (होम)</span>
+            </Link>
+
+            <Link
+              href="/about"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-xl bg-white hover:bg-[#EEF2EA] text-[#16261B] font-bold text-xs border border-[#D5DDD0] transition"
+            >
+              <Info className="w-4 h-4 text-amber-600" />
+              <span>About Us (टीम परिचय)</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => handleAnchorClick("first-aid")}
+              className="w-full flex items-center justify-between p-3 rounded-xl bg-white hover:bg-[#EEF2EA] text-[#16261B] font-bold text-xs border border-[#D5DDD0] transition text-left cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-base">🩺</span>
+                <span>प्राथमिक उपचार (First Aid Guide)</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleAnchorClick("portals")}
+              className="w-full flex items-center justify-between p-3 rounded-xl bg-white hover:bg-[#EEF2EA] text-[#16261B] font-bold text-xs border border-[#D5DDD0] transition text-left cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-base">🏛️</span>
+                <span>पोर्टल चयन (All Portals)</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+            </button>
+          </div>
+
+          {/* Rapid Tools Section */}
+          <div className="space-y-1.5 pt-2">
+            <p className="text-[10px] font-black uppercase tracking-wider text-[#5B6B5F] px-1">Rapid Tools (त्वरित साधन)</p>
+
+            <Link
+              href={ivrHref}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 text-emerald-950 font-bold text-xs border border-emerald-200 transition"
+            >
+              <Phone className="w-4 h-4 text-emerald-600" />
+              <div>
+                <p className="font-extrabold text-xs">1800 IVR Voice Toll-Free</p>
+                <p className="text-[10px] text-emerald-700 font-medium">बिना इंटरनेट कीपैड फोन से रिपोर्ट</p>
+              </div>
+            </Link>
+
+            <Link
+              href={photoDetectHref}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-xl bg-amber-50 text-amber-950 font-bold text-xs border border-amber-200 transition"
+            >
+              <span className="text-base">📷</span>
+              <div>
+                <p className="font-extrabold text-xs">चोट की फोटो से AI जांच</p>
+                <p className="text-[10px] text-amber-700 font-medium">Photo Triage & Wound Analysis</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* Drawer Footer / Auth */}
+        <div className="p-4 border-t border-[#D5DDD0] bg-[#F7F9F5] shrink-0">
+          {!user ? (
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="py-2.5 text-center text-xs font-bold text-[#16261B] bg-white rounded-xl border border-[#D5DDD0] hover:bg-gray-50 transition"
+              >
+                Sign In (लॉग इन)
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="py-2.5 text-center text-xs font-bold text-[#2E7D46] bg-[#DCEFE1] hover:bg-[#DCEFE1]/80 rounded-xl border border-[#2E7D46]/20 transition"
+              >
+                Create Account
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-gray-500 font-medium">Signed in as:</span>
+                <span className="font-bold text-[#16261B] truncate max-w-[150px]">{user.name || user.email}</span>
+              </div>
+              <Link
+                href={user.role === "FARMER" ? "/farmer/report" : "/dashboard"}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block w-full py-2.5 text-center text-xs font-bold text-white bg-[#2E7D46] hover:bg-[#256638] rounded-xl shadow-xs transition"
+              >
+                {user.role === "FARMER" ? "🌾 Open Farmer Portal" : "🩺 Open Authority Dashboard"}
+              </Link>
+            </div>
+          )}
+        </div>
+      </aside>
 
       {/* ── TOP NAV BAR ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#D5DDD0] shadow-xs px-3 sm:px-8 py-2.5 sm:py-3">
-        <div className="flex items-center justify-between gap-2 max-w-7xl mx-auto">
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#D5DDD0] shadow-xs">
+        <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Brand */}
           <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group min-w-0 shrink">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-[#1B4328] via-[#2E7D46] to-[#3B9B58] flex items-center justify-center text-white shadow-md shadow-[#2E7D46]/20 group-hover:scale-105 transition-transform shrink-0">
@@ -226,116 +455,19 @@ export default function HomeLandingPage() {
             {/* Mobile Hamburger Toggle Button */}
             <button
               type="button"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => setIsMobileMenuOpen(true)}
               className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-[#EEF2EA] text-[#16261B] hover:bg-[#DCEFE1] active:scale-95 transition border border-[#D5DDD0] cursor-pointer shrink-0 touch-manipulation select-none"
               aria-label="Toggle navigation menu"
               aria-expanded={isMobileMenuOpen}
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5 text-red-600" /> : <Menu className="w-5 h-5 text-[#16261B]" />}
+              <Menu className="w-5 h-5 text-[#16261B]" />
             </button>
           </div>
         </div>
-
-        {/* Mobile Dropdown Menu Drawer */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden mt-3 pt-3 border-t border-[#D5DDD0] space-y-2 max-h-[calc(100vh-5rem)] overflow-y-auto pb-4 animate-in fade-in slide-in-from-top-2 duration-150">
-            <div className="grid grid-cols-2 gap-2 pb-2">
-              <Link
-                href="/"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 p-2.5 rounded-xl bg-white text-[#16261B] font-bold text-xs border border-[#D5DDD0] hover:bg-[#DCEFE1]"
-              >
-                <Home className="w-4 h-4 text-[#2E7D46]" />
-                <span>Home (होम)</span>
-              </Link>
-              <Link
-                href="/appointments"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 text-[#2E7D46] font-bold text-xs border border-emerald-200"
-              >
-                <Stethoscope className="w-4 h-4 text-[#2E7D46]" />
-                <span>Connect with Vet (डॉक्टर)</span>
-              </Link>
-              <Link
-                href="/about"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 p-2.5 rounded-xl bg-white text-[#16261B] font-bold text-xs border border-[#D5DDD0] hover:bg-[#DCEFE1]"
-              >
-                <Info className="w-4 h-4 text-amber-600" />
-                <span>About Us (टीम परिचय)</span>
-              </Link>
-              <a
-                href="#first-aid"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 p-2.5 rounded-xl bg-white text-[#16261B] font-bold text-xs border border-[#D5DDD0] hover:bg-[#DCEFE1]"
-              >
-                <span>🩺 First Aid (उपचार)</span>
-              </a>
-              <a
-                href="#surveillance"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 p-2.5 rounded-xl bg-white text-[#16261B] font-bold text-xs border border-[#D5DDD0] hover:bg-[#DCEFE1]"
-              >
-                <span>📡 Surveillance</span>
-              </a>
-              <a
-                href="#portals"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 p-2.5 rounded-xl bg-white text-[#16261B] font-bold text-xs border border-[#D5DDD0] hover:bg-[#DCEFE1]"
-              >
-                <span>🏛️ All Portals</span>
-              </a>
-              <Link
-                href={ivrHref}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 text-emerald-900 font-bold text-xs border border-emerald-200"
-              >
-                <span>📞 1800 IVR Call</span>
-              </Link>
-              <Link
-                href={photoDetectHref}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 p-2.5 rounded-xl bg-amber-50 text-amber-900 font-bold text-xs border border-amber-200 col-span-2"
-              >
-                <span>📷 चोट की फोटो से जांच (Photo Wound AI)</span>
-              </Link>
-            </div>
-
-            {/* Mobile Auth row */}
-            <div className="pt-2 border-t border-[#D5DDD0] flex items-center gap-2">
-              {!user ? (
-                <>
-                  <Link
-                    href="/login"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex-1 py-2 text-center text-xs font-bold text-[#16261B] bg-white rounded-xl border border-[#D5DDD0]"
-                  >
-                    Sign In (लॉग इन)
-                  </Link>
-                  <Link
-                    href="/register"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex-1 py-2 text-center text-xs font-bold text-[#2E7D46] bg-[#DCEFE1] rounded-xl border border-[#2E7D46]/20"
-                  >
-                    Create Account
-                  </Link>
-                </>
-              ) : (
-                <Link
-                  href={user.role === "FARMER" ? "/farmer/report" : "/dashboard"}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full py-2 text-center text-xs font-bold text-[#2E7D46] bg-[#DCEFE1] rounded-xl"
-                >
-                  {user.role === "FARMER" ? "🌾 Open Farmer Portal" : "🩺 Open Authority Dashboard"}
-                </Link>
-              )}
-            </div>
-          </div>
-        )}
       </nav>
 
       {/* ── HERO SECTION ── */}
-      <section className="pt-24 pb-16 px-4 sm:px-8 relative overflow-hidden bg-gradient-to-b from-[#183921] via-[#215A33] to-[#2E7D46] text-white">
+      <section className="pt-24 pb-16 relative overflow-hidden bg-gradient-to-b from-[#183921] via-[#215A33] to-[#2E7D46] text-white">
         {/* Subtle background grid */}
         <div
           className="absolute inset-0 opacity-10 pointer-events-none"
@@ -345,7 +477,7 @@ export default function HomeLandingPage() {
           }}
         />
 
-        <div className="max-w-6xl mx-auto relative z-10 pt-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-2">
           {/* ── 3 PRIMARY ENTRY BUTTONS (LESS-EDUCATED ACCESSIBILITY & RAPID ACCESS) ── */}
           <div id="portals" className="mb-10 bg-black/20 backdrop-blur-md p-4 sm:p-6 rounded-3xl border border-white/20 shadow-2xl">
             <div className="flex items-center justify-between flex-wrap gap-2 mb-4 pb-3 border-b border-white/10">
@@ -603,8 +735,8 @@ export default function HomeLandingPage() {
     </section>
 
       {/* ── LIVE STATS TICKER ── */}
-      <section className="bg-white border-b border-[#D5DDD0] py-6 px-4 sm:px-8">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+      <section className="bg-white border-b border-[#D5DDD0] py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div className="p-3">
             <b className="text-3xl sm:text-4xl font-black text-[#2E7D46] block">1,248+</b>
             <span className="text-xs sm:text-sm font-bold text-[#5B6B5F]">Active Farmers Registered</span>
@@ -625,7 +757,7 @@ export default function HomeLandingPage() {
       </section>
 
       {/* ── INTERACTIVE SYMPTOM & FIRST AID EXPLORER (PASHU RAKSHAK REFERENCE) ── */}
-      <section id="first-aid" className="py-16 px-4 sm:px-8 max-w-6xl mx-auto">
+      <section id="first-aid" className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <span className="text-xs font-extrabold uppercase tracking-wider text-[#2E7D46] bg-[#DCEFE1] px-3 py-1 rounded-full">
             Immediate Clinical Guide
@@ -721,8 +853,8 @@ export default function HomeLandingPage() {
       </section>
 
       {/* ── ABOUT US SECTION ── */}
-      <section id="about" className="py-16 px-4 sm:px-8 bg-white border-t border-[#D5DDD0]">
-        <div className="max-w-6xl mx-auto space-y-10">
+      <section id="about" className="py-16 bg-white border-t border-[#D5DDD0]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="text-center max-w-3xl mx-auto space-y-3">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#2E7D46] bg-[#DCEFE1] px-3 py-1 rounded-full">
               About The Initiative • हमारे बारे में
@@ -799,36 +931,46 @@ export default function HomeLandingPage() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="bg-[#16261B] text-white py-12 px-4 sm:px-8">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-          <div className="space-y-1">
-            <div className="flex items-center justify-center md:justify-start gap-2">
-              <span className="text-2xl">🐄</span>
-              <span className="text-xl font-black">Pashu Rakshak (JeevRaksha)</span>
+      <footer className="bg-[#16261B] text-white py-12 border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+            <div className="space-y-1">
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <span className="text-2xl">🐄</span>
+                <span className="text-xl font-black">Pashu Rakshak (JeevRaksha)</span>
+              </div>
+              <p className="text-xs text-white/60">
+                AI-Powered Real-Time Livestock Disease Early Warning & Surveillance Grid
+              </p>
             </div>
-            <p className="text-xs text-white/60">
-              AI-Powered Real-Time Livestock Disease Early Warning & Surveillance Grid
-            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs font-semibold text-white/80">
+              <Link href="/about" className="hover:text-white transition text-[#FBEFCF]">
+                About Us / Hackathon Team (टीम परिचय)
+              </Link>
+              <Link href="/appointments" className="hover:text-white transition">
+                Connect with Vet (डॉक्टर)
+              </Link>
+              <Link href="/farmer/report" className="hover:text-white transition">
+                Report Illness (रोग रिपोर्ट)
+              </Link>
+              <Link href="/dashboard" className="hover:text-white transition">
+                Authority Dashboard
+              </Link>
+              <Link href="/login" className="hover:text-white transition">
+                Sign In
+              </Link>
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-white/80">
-            <Link href="/about" className="hover:text-white transition text-[#FBEFCF]">
-              About Us / Hackathon Team (टीम परिचय)
-            </Link>
-            <Link href="/farmer/report" className="hover:text-white transition">
-              Report Illness (रोग रिपोर्ट)
-            </Link>
-            <Link href="/dashboard" className="hover:text-white transition">
-              Authority Dashboard
-            </Link>
-            <Link href="/login" className="hover:text-white transition">
-              Sign In
-            </Link>
+          <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-[11px] text-white/40">
+            <div>
+              Built with ❤️ for Indian Farmers & Veterinary Officers • SIH26128
+            </div>
+            <div>
+              © {new Date().getFullYear()} Pashu Rakshak / JeevRaksha. Built for India&apos;s rural animal husbandry ecosystem.
+            </div>
           </div>
-        </div>
-
-        <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-white/10 text-center text-[11px] text-white/40">
-          © {new Date().getFullYear()} Pashu Rakshak / JeevRaksha. Built for India's rural animal husbandry ecosystem.
         </div>
       </footer>
     </div>
