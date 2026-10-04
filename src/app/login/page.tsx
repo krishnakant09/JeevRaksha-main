@@ -14,7 +14,8 @@ import {
   ArrowRight,
   AlertCircle,
   PhoneCall,
-  Lock
+  Lock,
+  UserPlus
 } from "lucide-react";
 
 type PortalType = "farmer" | "vet" | "admin";
@@ -43,6 +44,7 @@ function LoginForm() {
   const [cooldown, setCooldown] = useState(0);
   const [debugOtp, setDebugOtp] = useState<string | null>(null);
   const [otpChallengeToken, setOtpChallengeToken] = useState<string | null>(null);
+  const [notRegistered, setNotRegistered] = useState(false);
 
   // Email / Password state
   const [email, setEmail] = useState("");
@@ -82,6 +84,7 @@ function LoginForm() {
   const handleSwitchPortal = (target: PortalType) => {
     setPortal(target);
     setError("");
+    setNotRegistered(false);
     setOtpSent(false);
     setOtp("");
     setDebugOtp(null);
@@ -157,17 +160,27 @@ function LoginForm() {
 
     setLoading(true);
     setError("");
+    setNotRegistered(false);
 
     try {
       const res = await fetch("/api/auth/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: cleaned }),
+        body: JSON.stringify({
+          phone: cleaned,
+          checkRegistered: true,
+          purpose: "login",
+        }),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Failed to send OTP.");
+        if (data.notRegistered) {
+          setNotRegistered(true);
+          setError("");
+        } else {
+          setError(data.error || "Failed to send OTP.");
+        }
         if (data.cooldownRemaining) setCooldown(data.cooldownRemaining);
         setLoading(false);
         return;
@@ -194,6 +207,7 @@ function LoginForm() {
 
     setLoading(true);
     setError("");
+    setNotRegistered(false);
 
     try {
       const res = await fetch("/api/auth/otp/verify", {
@@ -203,19 +217,26 @@ function LoginForm() {
           phone: phone.replace(/\D/g, ""),
           otp,
           otpChallengeToken,
+          purpose: "login",
         }),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Invalid OTP.");
+        if (data.notRegistered) {
+          setNotRegistered(true);
+          setError("");
+        } else {
+          setError(data.error || "Invalid OTP.");
+        }
         setLoading(false);
         return;
       }
 
-      if (data.isNew) {
-        // If not registered yet, redirect to complete signup
-        router.push("/register");
+      if (data.isNew || data.notRegistered) {
+        setNotRegistered(true);
+        setError("");
+        setLoading(false);
         return;
       }
 
@@ -245,15 +266,25 @@ function LoginForm() {
     const cleaned = phone.replace(/\D/g, "");
     setLoading(true);
     setError("");
+    setNotRegistered(false);
     try {
       const res = await fetch("/api/auth/otp/voice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: cleaned }),
+        body: JSON.stringify({
+          phone: cleaned,
+          checkRegistered: true,
+          purpose: "login",
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Voice call failed.");
+        if (data.notRegistered) {
+          setNotRegistered(true);
+          setError("");
+        } else {
+          setError(data.error || "Voice call failed.");
+        }
         if (data.cooldownRemaining) setCooldown(data.cooldownRemaining);
       } else {
         setCooldown(30);
@@ -424,12 +455,47 @@ function LoginForm() {
 
         {/* Form Body */}
         <div className="px-8 py-6">
-          {error && (
+          {notRegistered ? (
+            <div className="mb-4 p-4 bg-amber-50/95 border-2 border-amber-300 rounded-2xl shadow-xs">
+              <div className="flex items-start gap-3">
+                <div className="p-2.5 bg-amber-100 border border-amber-200 text-amber-800 rounded-xl shrink-0 mt-0.5">
+                  <UserPlus className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-black text-amber-950 text-sm">
+                    Account Not Registered (खाते नोंदणीकृत नाही)
+                  </h4>
+                  <p className="mt-1 text-xs text-amber-900 font-medium leading-relaxed">
+                    Mobile number <strong className="font-mono font-bold text-amber-950">+91 {phone.replace(/\D/g, "")}</strong> is not registered with Pashu Rakshak. Please create an account to access the portal.
+                  </p>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <Link
+                      href={`/register?phone=${encodeURIComponent(phone.replace(/\D/g, ""))}&role=${portal === "vet" ? "VETERINARIAN" : "FARMER"}`}
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#2E7D46] hover:bg-[#256638] text-white rounded-xl text-xs font-black shadow-xs transition active:scale-98"
+                    >
+                      <UserPlus className="w-4 h-4" />
+                      <span>Register New Account (नवीन खाते नोंदणी करा)</span>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNotRegistered(false);
+                        setPhone("");
+                      }}
+                      className="px-3 py-2 text-xs font-bold text-amber-900 hover:text-amber-950 hover:underline cursor-pointer"
+                    >
+                      Try Another Number
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : error ? (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-bold flex items-start gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span className="leading-snug">{error}</span>
             </div>
-          )}
+          ) : null}
 
           {/* ── MODE 1: PHONE OTP LOGIN ── */}
           {authMode === "otp" && (
@@ -454,6 +520,7 @@ function LoginForm() {
                         onChange={(e) => {
                           setPhone(e.target.value.replace(/\D/g, ""));
                           setError("");
+                          setNotRegistered(false);
                         }}
                         placeholder="10-digit mobile number"
                         className="w-full px-3 py-3 text-base font-black text-[#16261B] outline-hidden bg-transparent"
@@ -482,7 +549,13 @@ function LoginForm() {
                     <span>Sent to +91 {phone}</span>
                     <button
                       type="button"
-                      onClick={() => setOtpSent(false)}
+                      onClick={() => {
+                        setOtpSent(false);
+                        setNotRegistered(false);
+                        setError("");
+                        setOtp("");
+                        setDebugOtp(null);
+                      }}
                       className="text-[#2E7D46] hover:underline font-black cursor-pointer"
                     >
                       Change Number

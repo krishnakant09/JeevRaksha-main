@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import { generateNumericOtp, hashOtp, sendOtpVoiceCall } from "@/lib/sms";
 import { findOtpAttempt, saveOtpAttempt } from "@/lib/otp-db";
 import { createOtpChallengeToken } from "@/lib/otp-token";
@@ -21,6 +22,33 @@ export async function POST(req: Request) {
         { error: "Please enter a valid 10-digit Indian mobile number." },
         { status: 400 }
       );
+    }
+
+    // If caller specifies checkRegistered or purpose='login', ensure account exists
+    if (body.checkRegistered || body.purpose === "login") {
+      let existingUser: any = null;
+      try {
+        existingUser = await prisma.user.findFirst({
+          where: { phone },
+          select: { id: true, name: true, role: true, status: true },
+        });
+      } catch {
+        const rawUsers: any[] = (await prisma.$queryRawUnsafe(
+          "SELECT id, name, role, status FROM User WHERE phone = ? LIMIT 1",
+          phone
+        ).catch(() => [])) as any[];
+        if (rawUsers && rawUsers.length > 0) existingUser = rawUsers[0];
+      }
+
+      if (!existingUser) {
+        return NextResponse.json(
+          {
+            error: "This mobile number is not registered. Please create a new account to continue.",
+            notRegistered: true,
+          },
+          { status: 404 }
+        );
+      }
     }
 
     const now = new Date();

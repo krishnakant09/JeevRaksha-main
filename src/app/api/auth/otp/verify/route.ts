@@ -153,7 +153,21 @@ export async function POST(req: Request) {
       return response;
     }
 
-    // User is new: allow client to proceed to role and detail collection
+    // If caller specifically wanted to login, reject un-registered numbers
+    if (body.purpose === "login" || body.checkRegistered) {
+      const response = NextResponse.json(
+        {
+          error: "Account not registered with this mobile number. Please register first.",
+          notRegistered: true,
+          isNew: true,
+        },
+        { status: 404 }
+      );
+      response.cookies.delete("jeevraksha_otp_challenge");
+      return response;
+    }
+
+    // User is new (registration flow): allow client to proceed to role and detail collection
     const response = NextResponse.json({
       success: true,
       isNew: true,

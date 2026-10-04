@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   Phone,
@@ -283,8 +283,11 @@ const TRANSLATIONS = {
 type Language = "mr" | "hi" | "en";
 type Role = "FARMER" | "VET" | "OFFICER";
 
-export default function RegisterPage() {
+function RegisterWizard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const phoneParam = searchParams.get("phone");
+  const roleParam = searchParams.get("role");
 
   // Core wizard state
   const [lang, setLang] = useState<Language>("mr");
@@ -308,6 +311,23 @@ export default function RegisterPage() {
   const [authToken, setAuthToken] = useState("");
   const [debugOtp, setDebugOtp] = useState<string | null>(null);
   const [otpChallengeToken, setOtpChallengeToken] = useState<string | null>(null);
+
+  // Pre-fill phone and role from searchParams if navigated from login
+  useEffect(() => {
+    if (phoneParam) {
+      const cleanPhone = phoneParam.replace(/\D/g, "");
+      if (cleanPhone.length === 10) {
+        setPhone(cleanPhone);
+      }
+    }
+    if (roleParam) {
+      if (roleParam === "VETERINARIAN" || roleParam === "VET") {
+        setRole("VET");
+      } else {
+        setRole("FARMER");
+      }
+    }
+  }, [phoneParam, roleParam]);
 
   // Timers and loading states
   const [cooldown, setCooldown] = useState(0);
@@ -2038,5 +2058,13 @@ export default function RegisterPage() {
         Government of Maharashtra Animal Husbandry Department • Problem Statement SIH26128
       </footer>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#EEF2EA] flex items-center justify-center font-bold text-[#2E7D46]">Loading...</div>}>
+      <RegisterWizard />
+    </Suspense>
   );
 }

@@ -203,6 +203,20 @@
 
 ---
 
+### 14. Unregistered Mobile Number Detection & Seamless Registration Flow
+- **Unregistered Phone Check on Login:**
+  - When requesting an OTP or voice call from `/login` (`checkRegistered: true`, `purpose: "login"`), the backend verifies if a user with that mobile number exists in the database.
+  - If unregistered, the API returns status `404` with `{ notRegistered: true }`.
+- **Informative Login Alert & 1-Click Registration Link (`src/app/login/page.tsx`):**
+  - Displays a high-contrast amber alert banner:
+    `Account Not Registered (खाते नोंदणीकृत नाही) — Mobile number +91 XXXXXXXXXX is not registered with Pashu Rakshak.`
+  - Provides a prominent **"Register New Account (नवीन खाते नोंदणी करा)"** button linking directly to `/register?phone=...&role=...`.
+  - Includes a quick **"Try Another Number"** button to reset the field.
+- **Pre-Filled Registration Wizard (`src/app/register/page.tsx`):**
+  - Seamlessly extracts `phone` and `role` query parameters from the URL, automatically populating the user's mobile number and intended role so they do not have to type it again.
+
+---
+
 ## 📁 Key File Map
 
 | Path | Description |
