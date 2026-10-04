@@ -65,7 +65,7 @@ interface TeamMember {
 const FOUNDER_LEADER: TeamMember = {
   id: "krishnakant",
   name: "Krishnakant Sharma",
-  role: "Founder & Lead Full Stack Architect",
+  role: "Full Stack Architect",
   category: "ai",
   categoryLabel: "Full-Stack Architecture",
   lead: true,
@@ -249,55 +249,129 @@ function ScrollReveal({
   );
 }
 
-// Clean Photo Avatar Component with automatic initials fallback
-function PhotoAvatar({
-  member,
-  size = "md",
-  className = "",
-}: {
-  member: TeamMember;
-  size?: "sm" | "md" | "lg" | "xl";
-  className?: string;
-}) {
-  const [hasError, setHasError] = useState<boolean>(false);
-
-  const sizeClasses = {
-    sm: "w-14 h-14 text-lg",
-    md: "w-20 h-20 text-2xl",
-    lg: "w-28 h-28 text-3xl",
-    xl: "w-44 h-44 sm:w-56 sm:h-56 text-4xl",
-  }[size];
+// Modern Team Member Card with Large Photo and Uniform Box Dimensions
+function TeamMemberCard({ member }: { member: TeamMember }) {
+  const [hasError, setHasError] = useState(false);
 
   return (
-    <div className={`relative group shrink-0 ${className}`}>
-      <div
-        className={`${sizeClasses} rounded-3xl overflow-hidden bg-gradient-to-tr from-[#1B4328] via-[#2E7D46] to-[#4DAA68] p-1 shadow-lg transition-transform duration-300 group-hover:scale-[1.02]`}
-      >
-        <div className="w-full h-full rounded-[22px] overflow-hidden bg-[#183921] relative flex items-center justify-center">
-          {!hasError ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={member.photoUrl}
-              alt={member.name}
-              onError={() => setHasError(true)}
-              className="w-full h-full object-cover object-top"
-            />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#183921] via-[#2E7D46] to-[#3B9B58] text-white p-2 select-none">
-              <span className="font-black tracking-wider text-xl sm:text-2xl drop-shadow-sm">
+    <div className="bg-white rounded-3xl border border-[#D5DDD0] shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col h-full group">
+      {/* ── LARGE SIZE PHOTO ── */}
+      <div className="relative w-full h-72 sm:h-80 bg-gradient-to-br from-[#183921] via-[#215A33] to-[#2E7D46] overflow-hidden shrink-0">
+        {!hasError ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={member.photoUrl}
+            alt={member.name}
+            onError={() => setHasError(true)}
+            className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center text-white select-none p-6 text-center bg-gradient-to-br from-[#183921] via-[#215A33] to-[#2E7D46]">
+            <div className="w-24 h-24 rounded-3xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center mb-3 shadow-inner">
+              <span className="text-3xl font-black tracking-widest text-emerald-200">
                 {member.initials}
               </span>
-              <span className="text-xs sm:text-sm mt-1">{member.avatarEmoji}</span>
             </div>
+            <span className="text-2xl mb-1">{member.avatarEmoji}</span>
+            <span className="text-xs font-bold text-white/80">{member.name}</span>
+          </div>
+        )}
+
+        {/* Floating Top Badges */}
+        <div className="absolute top-3.5 inset-x-3.5 flex items-center justify-between pointer-events-none z-10">
+          <span className="px-3 py-1 rounded-full bg-[#183921]/80 backdrop-blur-md text-emerald-300 text-[10px] font-black uppercase tracking-wider border border-white/15 shadow-md pointer-events-auto">
+            {member.categoryLabel}
+          </span>
+
+          {member.lead && (
+            <span className="px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[10px] font-black uppercase tracking-wider shadow-lg flex items-center gap-1 border border-amber-300/40 pointer-events-auto">
+              <Crown className="w-3.5 h-3.5 text-white fill-white" />
+              <span>Team Lead</span>
+            </span>
           )}
+        </div>
+
+        {/* Bottom Dark Gradient with Name and Role Overlay on Photo */}
+        <div className="absolute inset-x-0 bottom-0 pt-20 pb-4 px-5 bg-gradient-to-t from-black/90 via-black/45 to-transparent flex flex-col justify-end pointer-events-none z-10">
+          <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight drop-shadow-md">
+            {member.name}
+          </h3>
+          <p className="text-xs font-bold text-emerald-300 drop-shadow-xs mt-0.5">
+            {member.role}
+          </p>
         </div>
       </div>
 
-      {member.lead && (
-        <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white p-2 rounded-2xl shadow-lg border-2 border-white flex items-center justify-center">
-          <Crown className="w-4 h-4 text-white fill-white" />
+      {/* ── CARD BODY (EXACT SAME SIZED SECTIONS) ── */}
+      <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
+        <div className="space-y-2.5">
+          {/* Focus Subtitle (Single Line) */}
+          <div className="flex items-center gap-1.5 text-xs font-bold text-[#5B6B5F]">
+            <Sparkles className="w-3.5 h-3.5 text-[#2E7D46] shrink-0" />
+            <span className="truncate">{member.focus}</span>
+          </div>
+
+          {/* Description (Uniform 3-line clamp with min-height for identical card size) */}
+          <p className="text-xs text-[#354839] font-medium leading-relaxed line-clamp-3 min-h-[3.6rem]">
+            {member.description}
+          </p>
         </div>
-      )}
+
+        {/* Skills Section (Uniform fixed height) */}
+        <div className="space-y-1.5 pt-2 border-t border-[#D5DDD0]/60">
+          <span className="text-[10px] uppercase font-black text-[#5B6B5F] tracking-wider block">
+            Core Technical Mastery
+          </span>
+          <div className="flex flex-wrap gap-1.5 h-14 overflow-hidden content-start">
+            {member.skills.map((skill, sIdx) => (
+              <span
+                key={sIdx}
+                className="px-2 py-0.5 rounded-lg bg-[#F4F7F2] text-[#16261B] text-[10px] font-bold border border-[#D5DDD0] shadow-2xs hover:border-[#2E7D46] transition-colors"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Card Footer: Direct Connect Links */}
+        <div className="pt-3 border-t border-[#D5DDD0]/60 flex items-center justify-between text-xs">
+          <span className="text-[11px] font-bold text-[#5B6B5F]">Connect:</span>
+          <div className="flex items-center gap-1.5">
+            {member.socials?.github && (
+              <a
+                href={member.socials.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-lg bg-[#F4F7F2] hover:bg-[#DCEFE1] text-[#16261B] flex items-center justify-center transition border border-[#D5DDD0] shadow-2xs hover:scale-105 cursor-pointer"
+                title="GitHub"
+              >
+                <Github className="w-3.5 h-3.5" />
+              </a>
+            )}
+            {member.socials?.linkedin && (
+              <a
+                href={member.socials.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-lg bg-[#F4F7F2] hover:bg-[#DCEFE1] text-[#0A66C2] flex items-center justify-center transition border border-[#D5DDD0] shadow-2xs hover:scale-105 cursor-pointer"
+                title="LinkedIn"
+              >
+                <Linkedin className="w-3.5 h-3.5" />
+              </a>
+            )}
+            {member.socials?.email && (
+              <a
+                href={member.socials.email}
+                className="w-8 h-8 rounded-lg bg-[#F4F7F2] hover:bg-[#DCEFE1] text-[#C8372D] flex items-center justify-center transition border border-[#D5DDD0] shadow-2xs hover:scale-105 cursor-pointer"
+                title="Email"
+              >
+                <Mail className="w-3.5 h-3.5" />
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -334,8 +408,11 @@ export default function AboutPage() {
     };
   }, []);
 
+  const ALL_TEAM_MEMBERS = [FOUNDER_LEADER, ...CORE_TEAM];
   const filteredMembers =
-    activeTab === "all" ? CORE_TEAM : CORE_TEAM.filter((m) => m.category === activeTab);
+    activeTab === "all"
+      ? ALL_TEAM_MEMBERS
+      : ALL_TEAM_MEMBERS.filter((m) => m.category === activeTab);
 
   return (
     <div className="min-h-screen bg-[#F4F7F2] text-[#16261B] overflow-x-hidden selection:bg-[#2E7D46] selection:text-white">
@@ -641,191 +718,59 @@ export default function AboutPage() {
 
       {/* ── MAIN CONTENT CONTAINER ── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-20">
-        {/* ── FOUNDER & LEAD ARCHITECT SPOTLIGHT ── */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
-            <div className="flex items-center gap-2.5">
-              <Crown className="w-6 h-6 text-amber-500 fill-amber-500" />
-              <h2 className="text-2xl sm:text-3xl font-black text-[#16261B] tracking-tight">
-                Founder & Lead Architect Spotlight
-              </h2>
-            </div>
-            <span className="text-xs font-bold text-[#2E7D46] bg-[#DCEFE1] px-3 py-1 rounded-full border border-[#2E7D46]/20">
-              System Architecture & Strategic Vision
-            </span>
-          </div>
-
-          <div className="bg-white rounded-3xl p-6 sm:p-10 border border-[#D5DDD0] shadow-xl relative overflow-hidden transition-all hover:shadow-2xl space-y-10">
-            {/* Corner Decorative Badge */}
-            <div className="absolute top-0 right-0 bg-gradient-to-l from-[#2E7D46] to-[#183921] text-white text-[10px] sm:text-xs font-black uppercase tracking-wider py-1.5 px-6 rounded-bl-2xl shadow-sm flex items-center gap-1.5 z-10">
-              <Star className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
-              <span>Project Architect & Team Lead</span>
-            </div>
-
-            {/* ── UPPER ROW: INFO ON LEFT, PHOTO ON RIGHT ── */}
-            <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start justify-between gap-8 lg:gap-12 pt-2">
-              {/* Left Side: Information */}
-              <div className="flex-1 space-y-5 text-left w-full">
-                <div>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#DCEFE1] text-[#2E7D46] text-xs font-black uppercase tracking-wider mb-2.5">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Founder • Lead Full Stack Architect</span>
-                  </div>
-                  <h3 className="text-2xl sm:text-4xl font-black text-[#16261B] tracking-tight">
-                    {FOUNDER_LEADER.name}
-                  </h3>
-                  <p className="text-sm sm:text-base font-extrabold text-[#2E7D46] mt-0.5">
-                    {FOUNDER_LEADER.role}
-                  </p>
-                  <p className="text-xs sm:text-sm text-[#5B6B5F] font-medium mt-1 leading-relaxed">
-                    {FOUNDER_LEADER.tagline}
-                  </p>
-                </div>
-
-                {/* Quote block */}
-                <div className="bg-[#F4F7F2] rounded-2xl p-4 border border-[#D5DDD0] flex items-start gap-3">
-                  <Quote className="w-5 h-5 text-[#2E7D46] shrink-0 mt-0.5 rotate-180 opacity-70" />
-                  <p className="text-xs sm:text-sm text-[#16261B] font-semibold italic leading-relaxed">
-                    &ldquo;Our vision for Pashu Rakshak is to bridge India&apos;s rural digital divide.
-                    Every dairy farmer with even a 2G keypad phone deserves the same early-warning protection
-                    against devastating outbreaks like FMD and Lumpy Skin Disease.&rdquo;
-                  </p>
-                </div>
-
-                {/* Contributions list */}
-                <div className="space-y-2 pt-1">
-                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#5B6B5F]">
-                    Key Architectural & Hackathon Milestones
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {FOUNDER_LEADER.contributions?.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-2 bg-[#F4F7F2] p-2.5 rounded-xl border border-[#D5DDD0]/80 shadow-2xs"
-                      >
-                        <CheckCircle2 className="w-4 h-4 text-[#2E7D46] shrink-0 mt-0.5" />
-                        <span className="text-xs text-[#16261B] font-medium leading-snug">
-                          {item}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Tech & Skills */}
-                <div className="pt-2">
-                  <span className="text-[10px] uppercase font-black text-[#5B6B5F] tracking-wider block mb-1.5">
-                    Core Technical Mastery
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {FOUNDER_LEADER.skills.map((skill, sIdx) => (
-                      <span
-                        key={sIdx}
-                        className="px-2.5 py-1 rounded-xl bg-[#F4F7F2] text-[#16261B] text-xs font-bold border border-[#D5DDD0] shadow-2xs hover:border-[#2E7D46] transition-colors"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Social Links */}
-                <div className="flex items-center gap-2 pt-2">
-                  <span className="text-xs font-bold text-[#5B6B5F] mr-1">Direct Contact:</span>
-                  {FOUNDER_LEADER.socials?.github && (
-                    <a
-                      href={FOUNDER_LEADER.socials.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-xl bg-[#F4F7F2] hover:bg-[#DCEFE1] text-[#16261B] flex items-center justify-center transition border border-[#D5DDD0] shadow-2xs hover:scale-105"
-                      title="GitHub Profile"
-                    >
-                      <Github className="w-4 h-4" />
-                    </a>
-                  )}
-                  {FOUNDER_LEADER.socials?.linkedin && (
-                    <a
-                      href={FOUNDER_LEADER.socials.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-xl bg-[#F4F7F2] hover:bg-[#DCEFE1] text-[#0A66C2] flex items-center justify-center transition border border-[#D5DDD0] shadow-2xs hover:scale-105"
-                      title="LinkedIn Profile"
-                    >
-                      <Linkedin className="w-4 h-4" />
-                    </a>
-                  )}
-                  {FOUNDER_LEADER.socials?.email && (
-                    <a
-                      href={FOUNDER_LEADER.socials.email}
-                      className="w-9 h-9 rounded-xl bg-[#F4F7F2] hover:bg-[#DCEFE1] text-[#C8372D] flex items-center justify-center transition border border-[#D5DDD0] shadow-2xs hover:scale-105"
-                      title="Email Contact"
-                    >
-                      <Mail className="w-4 h-4" />
-                    </a>
-                  )}
-                </div>
-              </div>
-
-              {/* Right Side: Portrait Photo */}
-              <div className="w-full sm:w-auto flex flex-col items-center shrink-0">
-                <div className="relative group">
-                  <div className="w-48 h-48 sm:w-60 sm:h-60 lg:w-64 lg:h-64 rounded-3xl overflow-hidden bg-gradient-to-tr from-[#1B4328] via-[#2E7D46] to-[#4DAA68] p-1.5 shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:scale-[1.02]">
-                    <div className="w-full h-full rounded-[20px] overflow-hidden bg-[#183921] relative">
-                      <img
-                        src={FOUNDER_LEADER.photoUrl}
-                        alt={FOUNDER_LEADER.name}
-                        className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                      />
-                      {/* Name pill on image */}
-                      <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/75 via-black/35 to-transparent pointer-events-none" />
-                      <div className="absolute bottom-2.5 inset-x-0 text-center pointer-events-none px-2">
-                        <span className="text-[11px] font-black text-white bg-black/40 px-3 py-1 rounded-full backdrop-blur-xs border border-white/20">
-                          {FOUNDER_LEADER.name}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Crown Badge */}
-                  <div className="absolute -bottom-2.5 -right-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white p-2.5 rounded-2xl shadow-lg border-2 border-white flex items-center justify-center">
-                    <Crown className="w-5 h-5 text-white fill-white" />
-                  </div>
-                </div>
-
-                <div className="mt-3 text-center">
-                  <span className="text-xs font-black text-[#16261B] block">
-                    Krishnakant Sharma
-                  </span>
-                  <span className="text-[11px] font-bold text-[#2E7D46]">
-                    Founder & Lead Architect
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── CORE TEAM MEMBERS WITH INTERACTIVE FILTER TABS ── */}
+        {/* ── CORE TEAM MEMBERS SECTION (SAME SIZE BOX WITH LARGE PHOTO) ── */}
         <section className="space-y-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#D5DDD0] pb-6">
+          {/* Mission & Hackathon Header Banner */}
+          <div className="bg-gradient-to-r from-[#183921] via-[#215A33] to-[#2E7D46] rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+              <div className="space-y-2.5 max-w-2xl">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-emerald-200 text-xs font-black uppercase tracking-wider border border-white/20">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Smart India Hackathon 2026 • SIH26128</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                  Pashu Rakshak Engineering Squad
+                </h2>
+                <p className="text-xs sm:text-sm text-emerald-100/90 font-medium leading-relaxed">
+                  Multidisciplinary innovators bridging India&apos;s rural livestock digital divide with zero-internet 2G telephony,
+                  multilingual AI vision triage, and real-time GIS epidemiological command telemetry for the Govt. of Maharashtra.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/15 shrink-0 text-center sm:text-right">
+                <div>
+                  <div className="text-2xl sm:text-3xl font-black text-white">6</div>
+                  <div className="text-[10px] font-bold text-emerald-200 uppercase tracking-wider">Innovators</div>
+                </div>
+                <div className="w-px h-10 bg-white/20" />
+                <div>
+                  <div className="text-2xl sm:text-3xl font-black text-amber-300">SIH</div>
+                  <div className="text-[10px] font-bold text-emerald-200 uppercase tracking-wider">Grand Finale</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section Heading & Category Filter Pills */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#D5DDD0] pb-6 pt-2">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#DCEFE1] text-[#2E7D46] text-xs font-black uppercase tracking-wider mb-2">
                 <Users className="w-3.5 h-3.5" />
                 <span>Specialized Domain Leads</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-[#16261B] tracking-tight">
-                Core Engineering & Domain Team
-              </h2>
+              <h3 className="text-2xl sm:text-3xl font-black text-[#16261B] tracking-tight">
+                Engineering & Domain Innovators
+              </h3>
               <p className="text-xs sm:text-sm text-[#5B6B5F] font-semibold mt-1">
-                Multidisciplinary innovators spanning AI/Vision, Telecom IVR, low-literacy UX, and veterinary epidemiology.
+                Full-stack architecture, computer vision AI, zero-internet 2G telecom, accessibility UX, and veterinary epidemiology.
               </p>
             </div>
 
             {/* Filter Pills */}
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
               {[
-                { id: "all", label: "All Members" },
-                { id: "ai", label: "AI & Vision" },
+                { id: "all", label: "All Members (6)" },
+                { id: "ai", label: "Architecture & AI" },
                 { id: "ux", label: "UX & Accessibility" },
                 { id: "telecom", label: "2G Telecom / IVR" },
                 { id: "domain", label: "Veterinary Protocol" },
@@ -834,7 +779,7 @@ export default function AboutPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                     activeTab === tab.id
                       ? "bg-[#2E7D46] text-white shadow-sm"
                       : "bg-white text-[#5B6B5F] hover:bg-[#EEF2EA] hover:text-[#16261B] border border-[#D5DDD0]"
@@ -846,92 +791,10 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Cards Grid: Uniform 3-column grid with equal-height boxes and large photos */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
             {filteredMembers.map((member) => (
-              <div
-                key={member.id}
-                className="bg-white rounded-3xl p-6 border border-[#D5DDD0] shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 relative flex flex-col justify-between group"
-              >
-                <div>
-                  {/* Top Avatar & Role */}
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <PhotoAvatar member={member} size="md" />
-
-                    <div className="text-right">
-                      <span className="inline-block px-2.5 py-1 rounded-full bg-[#EEF2EA] text-[#2E7D46] text-[10px] font-extrabold uppercase tracking-wider border border-[#D5DDD0]">
-                        {member.categoryLabel}
-                      </span>
-                      <div className="flex items-center justify-end gap-1.5 mt-2.5">
-                        {member.socials?.github && (
-                          <a
-                            href={member.socials.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-7 h-7 rounded-lg bg-[#EEF2EA] hover:bg-[#DCEFE1] text-[#16261B] flex items-center justify-center transition border border-[#D5DDD0]"
-                            title="GitHub"
-                          >
-                            <Github className="w-3.5 h-3.5" />
-                          </a>
-                        )}
-                        {member.socials?.linkedin && (
-                          <a
-                            href={member.socials.linkedin}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-7 h-7 rounded-lg bg-[#EEF2EA] hover:bg-[#DCEFE1] text-[#0A66C2] flex items-center justify-center transition border border-[#D5DDD0]"
-                            title="LinkedIn"
-                          >
-                            <Linkedin className="w-3.5 h-3.5" />
-                          </a>
-                        )}
-                        {member.socials?.email && (
-                          <a
-                            href={member.socials.email}
-                            className="w-7 h-7 rounded-lg bg-[#EEF2EA] hover:bg-[#DCEFE1] text-[#C8372D] flex items-center justify-center transition border border-[#D5DDD0]"
-                            title="Email"
-                          >
-                            <Mail className="w-3.5 h-3.5" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Name and Role */}
-                  <h3 className="text-lg font-black text-[#16261B] leading-tight">
-                    {member.name}
-                  </h3>
-                  <p className="text-xs font-extrabold text-[#2E7D46] mt-0.5">
-                    {member.role}
-                  </p>
-                  <p className="text-[11px] font-semibold text-[#5B6B5F] mt-0.5 mb-3">
-                    Focus: {member.focus}
-                  </p>
-
-                  {/* Description */}
-                  <p className="text-xs text-[#16261B]/80 font-medium leading-relaxed mb-4">
-                    {member.description}
-                  </p>
-                </div>
-
-                {/* Skills Section */}
-                <div className="pt-3 border-t border-[#F4F7F2]">
-                  <span className="text-[10px] uppercase font-black text-[#5B6B5F] tracking-wider block mb-1.5">
-                    Key Tech & Expertise
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {member.skills.map((skill, sIdx) => (
-                      <span
-                        key={sIdx}
-                        className="px-2 py-0.5 rounded-lg bg-[#F4F7F2] text-[#16261B] text-[10px] font-bold border border-[#D5DDD0]"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <TeamMemberCard key={member.id} member={member} />
             ))}
           </div>
         </section>
