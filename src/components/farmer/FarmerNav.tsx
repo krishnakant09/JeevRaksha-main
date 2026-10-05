@@ -23,6 +23,7 @@ export default function FarmerNav({ userName }: FarmerNavProps) {
   const router = useRouter();
 
   const handleLogout = () => {
+    localStorage.removeItem("pashurakshak_user");
     localStorage.removeItem("jeevraksha_user");
     router.push("/login");
   };

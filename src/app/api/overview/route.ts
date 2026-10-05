@@ -29,7 +29,7 @@ export async function GET(req: Request) {
         jurisdictionDistrict: null,
         jurisdictionTaluka: null,
         jurisdictionVillage: null,
-        email: "state.officer@jeevraksha.in",
+        email: "state.officer@pashurakshak.in",
       };
     }
 

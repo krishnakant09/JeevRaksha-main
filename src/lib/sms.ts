@@ -45,7 +45,7 @@ export async function sendOtpSms(phone: string, otp: string): Promise<SmsProvide
   const provider = process.env.SMS_PROVIDER || "mock";
   const isDev = process.env.NODE_ENV !== "production";
 
-  const message = `[Pashu Rakshak / जीव रक्षा] Your verification code is ${otp}. Valid for 5 minutes. Do not share this OTP.`;
+  const message = `[Pashu Rakshak / पशु रक्षक] Your verification code is ${otp}. Valid for 5 minutes. Do not share this OTP.`;
 
   console.log(`\n==================================================`);
   console.log(`📱 [SMS SERVICE - ${provider.toUpperCase()}]`);

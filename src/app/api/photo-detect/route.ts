@@ -78,7 +78,9 @@ export async function POST(req: Request) {
     let farmerUser = await prisma.user.findFirst({
       where: {
         OR: [
+          { email: `farmer_${callerPhone}@pashurakshak.in` },
           { email: `farmer_${callerPhone}@jeevraksha.in` },
+          { email: 'farmer@pashurakshak.in' },
           { email: 'farmer@jeevraksha.in' },
         ],
       },
@@ -87,7 +89,7 @@ export async function POST(req: Request) {
     if (!farmerUser) {
       farmerUser = await prisma.user.create({
         data: {
-          email: `farmer_${callerPhone}@jeevraksha.in`,
+          email: `farmer_${callerPhone}@pashurakshak.in`,
           name: ownerName || 'किसान',
           password: 'photo_auto_gen',
           role: 'FARMER',

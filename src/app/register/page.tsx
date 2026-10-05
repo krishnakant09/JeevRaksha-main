@@ -114,7 +114,7 @@ const TRANSLATIONS = {
     vetUnderReviewTitle: "नोंदणी तपासणी सुरू आहे (Under Review)",
     vetUnderReviewSub: "आपला अर्ज प्रशासनाकडे पडताळणीसाठी सादर केला गेला आहे.",
     vetUnderReviewTime: "आपल्या नोंदणी प्रमाणपत्राची 24 ते 48 तासांत तपासणी केली जाईल. मंजुरी मिळाल्यावर आपल्याला SMS पाठवला जाईल.",
-    farmerDoneTitle: "जीव रक्षक मध्ये आपले स्वागत आहे!",
+    farmerDoneTitle: "पशु रक्षक मध्ये आपले स्वागत आहे!",
     farmerDoneSub: "आपले शेतकरी खाते यशस्वीरित्या तयार झाले आहे.",
     goToPortal: "शेतकरी पोर्टल उघडा",
     addFirstAnimal: "पहिले जनावर नोंदवा",
@@ -191,7 +191,7 @@ const TRANSLATIONS = {
     vetUnderReviewTitle: "पंजीकरण जांच जारी है (Under Review)",
     vetUnderReviewSub: "आपका आवेदन सत्यापन के लिए प्रशासन को प्रेषित किया गया है।",
     vetUnderReviewTime: "आपके प्रमाण पत्र की जांच 24 से 48 घंटे में पूरी होगी। अनुमोदन मिलने पर आपको SMS द्वारा सूचित किया जाएगा।",
-    farmerDoneTitle: "जीव रक्षक में आपका स्वागत है!",
+    farmerDoneTitle: "पशु रक्षक में आपका स्वागत है!",
     farmerDoneSub: "आपका किसान खाता सफलतापूर्वक तैयार हो गया है।",
     goToPortal: "किसान पोर्टल खोलें",
     addFirstAnimal: "पहला पशु पंजीकृत करें",
@@ -377,7 +377,8 @@ function RegisterWizard() {
   // Restore saved state from localStorage if available
   useEffect(() => {
     try {
-      const savedLang = localStorage.getItem("jeevraksha_signup_lang") as Language;
+      const savedLang = (localStorage.getItem("pashurakshak_signup_lang") ||
+        localStorage.getItem("jeevraksha_signup_lang")) as Language;
       if (savedLang && (savedLang === "mr" || savedLang === "hi" || savedLang === "en")) {
         setLang(savedLang);
       }
@@ -471,6 +472,7 @@ function RegisterWizard() {
   const handleLanguageSelect = (selected: Language) => {
     setLang(selected);
     try {
+      localStorage.setItem("pashurakshak_signup_lang", selected);
       localStorage.setItem("jeevraksha_signup_lang", selected);
     } catch {}
     setError("");
@@ -607,7 +609,9 @@ function RegisterWizard() {
 
       // If user is existing, save session and redirect
       if (!data.isNew && data.user) {
+        localStorage.setItem("pashurakshak_user", JSON.stringify(data.user));
         localStorage.setItem("jeevraksha_user", JSON.stringify(data.user));
+        localStorage.setItem("pashurakshak_token", data.token);
         localStorage.setItem("jeevraksha_token", data.token);
         if (data.user.role === "FARMER") router.push("/farmer/report");
         else router.push("/dashboard");
@@ -714,8 +718,12 @@ function RegisterWizard() {
       }
 
       setRegisteredUser(data.user);
+      localStorage.setItem("pashurakshak_user", JSON.stringify(data.user));
       localStorage.setItem("jeevraksha_user", JSON.stringify(data.user));
-      if (data.token) localStorage.setItem("jeevraksha_token", data.token);
+      if (data.token) {
+        localStorage.setItem("pashurakshak_token", data.token);
+        localStorage.setItem("jeevraksha_token", data.token);
+      }
 
       setStep("done");
     } catch {
@@ -790,6 +798,7 @@ function RegisterWizard() {
       });
       const data = await res.json();
       if (res.ok && data.user) {
+        localStorage.setItem("pashurakshak_user", JSON.stringify(data.user));
         localStorage.setItem("jeevraksha_user", JSON.stringify(data.user));
         router.push("/dashboard");
       } else {
@@ -847,7 +856,7 @@ function RegisterWizard() {
                 Pashu Rakshak
               </span>
               <span className="text-[10px] text-[#5B6B5F] font-bold block -mt-0.5">
-                जीव रक्षा • Account Setup
+                पशु रक्षक • Account Setup
               </span>
             </div>
           </Link>

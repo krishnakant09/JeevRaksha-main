@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
     const systemPrompt = {
       role: "system",
-      content: "You are an expert veterinary assistant for JeevRaksha (Animal Health Surveillance System in India). You must answer farmers' questions about their livestock health issues. KEEP YOUR ANSWERS VERY SHORT AND TO THE POINT (2-3 sentences max). Suggest immediate home remedies or when to call a vet. Reply in the same language the user uses (Hindi or English).",
+      content: "You are an expert veterinary assistant for Pashu Rakshak (Animal Health Surveillance System in India). You must answer farmers' questions about their livestock health issues. KEEP YOUR ANSWERS VERY SHORT AND TO THE POINT (2-3 sentences max). Suggest immediate home remedies or when to call a vet. Reply in the same language the user uses (Hindi or English).",
     };
 
     const response = await fetch("https://api.sarvam.ai/v1/chat/completions", {

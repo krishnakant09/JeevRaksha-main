@@ -25,7 +25,9 @@ export default function AnimalsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem("jeevraksha_user");
+    const stored =
+      localStorage.getItem("pashurakshak_user") ||
+      localStorage.getItem("jeevraksha_user");
     if (!stored) {
       router.push("/login");
       return;

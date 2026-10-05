@@ -21,7 +21,9 @@ export default function CasesList({ initialCases }: { initialCases: any[] }) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("jeevraksha_user");
+    const stored =
+      localStorage.getItem("pashurakshak_user") ||
+      localStorage.getItem("jeevraksha_user");
     if (stored) setUser(JSON.parse(stored));
   }, []);
 

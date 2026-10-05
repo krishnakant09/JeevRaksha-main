@@ -11,7 +11,9 @@ export default function FarmerLayout({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem("jeevraksha_user");
+    const stored =
+      localStorage.getItem("pashurakshak_user") ||
+      localStorage.getItem("jeevraksha_user");
     if (!stored) {
       router.replace(`/login?role=farmer&redirect=${encodeURIComponent(pathname)}`);
       return;
@@ -21,6 +23,7 @@ export default function FarmerLayout({ children }: { children: ReactNode }) {
       const parsed = JSON.parse(stored);
       setUser(parsed);
     } catch {
+      localStorage.removeItem("pashurakshak_user");
       localStorage.removeItem("jeevraksha_user");
       router.replace(`/login?role=farmer&redirect=${encodeURIComponent(pathname)}`);
       return;
@@ -30,6 +33,7 @@ export default function FarmerLayout({ children }: { children: ReactNode }) {
   }, [pathname, router]);
 
   const handleLogout = () => {
+    localStorage.removeItem("pashurakshak_user");
     localStorage.removeItem("jeevraksha_user");
     router.push("/login?role=farmer");
   };

@@ -92,6 +92,13 @@ export async function POST(req: Request) {
       otpChallengeToken: challengeToken,
     });
 
+    response.cookies.set("pashurakshak_otp_challenge", challengeToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 300, // 5 minutes
+      path: "/",
+    });
     response.cookies.set("jeevraksha_otp_challenge", challengeToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

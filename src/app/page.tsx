@@ -24,7 +24,10 @@ import {
   Home,
   Info,
   Stethoscope,
-  Calendar
+  Calendar,
+  Instagram,
+  Github,
+  Linkedin
 } from "lucide-react";
 
 interface SymptomGuide {
@@ -107,7 +110,9 @@ export default function HomeLandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("jeevraksha_user");
+    const stored =
+      localStorage.getItem("pashurakshak_user") ||
+      localStorage.getItem("jeevraksha_user");
     if (stored) {
       try {
         setUser(JSON.parse(stored));
@@ -199,7 +204,7 @@ export default function HomeLandingPage() {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-base font-black tracking-tight text-[#16261B]">Jeev Rakshak</span>
+                <span className="text-base font-black tracking-tight text-[#16261B]">Pashu Rakshak</span>
                 <span className="text-[9px] font-black uppercase tracking-wider bg-[#DCEFE1] text-[#2E7D46] px-1.5 py-0.5 rounded">
                   SIH26128
                 </span>
@@ -384,13 +389,13 @@ export default function HomeLandingPage() {
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-base sm:text-lg font-black tracking-tight text-[#16261B] whitespace-nowrap">Jeev Rakshak</span>
+                <span className="text-base sm:text-lg font-black tracking-tight text-[#16261B] whitespace-nowrap">Pashu Rakshak</span>
                 <span className="hidden sm:inline-block text-[10px] font-extrabold uppercase tracking-wider bg-[#DCEFE1] text-[#2E7D46] px-2 py-0.5 rounded-full">
                   Surveillance Grid
                 </span>
               </div>
               <p className="hidden sm:block text-[11px] font-semibold text-[#5B6B5F] -mt-0.5 truncate">
-                जीव रक्षा • AI Livestock Health & Early Warning
+                पशु रक्षक • AI Livestock Health & Early Warning
               </p>
             </div>
           </Link>
@@ -868,7 +873,7 @@ export default function HomeLandingPage() {
               About The Initiative • हमारे बारे में
             </span>
             <h2 className="text-3xl sm:text-4xl font-black text-[#16261B] tracking-tight">
-              Pashu Rakshak (Jeev Rakshak)
+              Pashu Rakshak (पशु रक्षक)
             </h2>
             <p className="text-sm sm:text-base text-[#5B6B5F] font-semibold leading-relaxed">
               Real-time syndromic disease early warning and veterinary emergency response ecosystem.
@@ -938,21 +943,28 @@ export default function HomeLandingPage() {
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
-      <footer className="bg-[#16261B] text-white py-12 border-t border-white/10">
+      {/* ── PROFESSIONAL COMPACT FOOTER ── */}
+      <footer className="bg-[#122216] text-white py-10 border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-            <div className="space-y-1">
-              <div className="flex items-center justify-center md:justify-start gap-2">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+            {/* Brand, Badges & Subtitle */}
+            <div className="space-y-1.5 text-center lg:text-left">
+              <div className="flex items-center justify-center lg:justify-start gap-2.5">
                 <span className="text-2xl">🐄</span>
-                <span className="text-xl font-black">Pashu Rakshak (JeevRaksha)</span>
+                <span className="text-lg font-black tracking-tight text-white">
+                  Pashu Rakshak (पशु रक्षक)
+                </span>
+                <span className="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-400/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-400/30">
+                  SIH26128
+                </span>
               </div>
-              <p className="text-xs text-white/60">
-                AI-Powered Real-Time Livestock Disease Early Warning & Surveillance Grid
+              <p className="text-xs text-white/60 max-w-md">
+                AI-Powered Real-Time Livestock Syndromic Surveillance & Rapid Veterinary Response System.
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs font-semibold text-white/80">
+            {/* Navigation Links */}
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-bold text-white/80">
               <Link href="/about" className="hover:text-white transition text-[#FBEFCF]">
                 About Us (टीम परिचय)
               </Link>
@@ -965,18 +977,47 @@ export default function HomeLandingPage() {
               <Link href="/dashboard" className="hover:text-white transition">
                 Authority Dashboard
               </Link>
-              <Link href="/login" className="hover:text-white transition">
-                Sign In
-              </Link>
+            </div>
+
+            {/* Social Connect */}
+            <div className="flex items-center gap-2">
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-pink-600/30 text-white hover:text-pink-300 border border-white/15 flex items-center justify-center transition-all hover:scale-105"
+                title="Instagram"
+              >
+                <Instagram className="w-3.5 h-3.5" />
+              </a>
+              <a
+                href="https://github.com/krishnakant09"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/15 flex items-center justify-center transition-all hover:scale-105"
+                title="GitHub"
+              >
+                <Github className="w-3.5 h-3.5" />
+              </a>
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-blue-600/30 text-white hover:text-blue-300 border border-white/15 flex items-center justify-center transition-all hover:scale-105"
+                title="LinkedIn"
+              >
+                <Linkedin className="w-3.5 h-3.5" />
+              </a>
             </div>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-[11px] text-white/40">
+          {/* Bottom Bar */}
+          <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-[11px] text-white/50">
             <div>
-              Built with ❤️ for Indian Farmers & Veterinary Officers
+              Built with ❤️ for Indian Farmers & Veterinary Officers • Govt. of Maharashtra Aligned
             </div>
             <div>
-              © {new Date().getFullYear()} Pashu Rakshak / JeevRaksha. Built for India&apos;s rural animal husbandry ecosystem.
+              © {new Date().getFullYear()} Pashu Rakshak (पशु रक्षक). Built for India&apos;s rural animal husbandry ecosystem.
             </div>
           </div>
         </div>

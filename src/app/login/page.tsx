@@ -57,15 +57,15 @@ function LoginForm() {
   useEffect(() => {
     setError("");
     if (portal === "vet") {
-      setEmail("vet@jeevraksha.in");
+      setEmail("vet@pashurakshak.in");
       setPassword("password123");
       setPhone("9876501234");
     } else if (portal === "admin") {
-      setEmail("admin@jeevraksha.in");
+      setEmail("admin@pashurakshak.in");
       setPassword("password123");
       setPhone("9988776655");
     } else {
-      setEmail("farmer@jeevraksha.in");
+      setEmail("farmer@pashurakshak.in");
       setPassword("password123");
       setPhone("6398704992");
     }
@@ -250,8 +250,12 @@ function LoginForm() {
       }
 
       // Save user session
+      localStorage.setItem("pashurakshak_user", JSON.stringify(data.user));
       localStorage.setItem("jeevraksha_user", JSON.stringify(data.user));
-      if (data.token) localStorage.setItem("jeevraksha_token", data.token);
+      if (data.token) {
+        localStorage.setItem("pashurakshak_token", data.token);
+        localStorage.setItem("jeevraksha_token", data.token);
+      }
 
       router.push(targetDestination);
     } catch {
@@ -327,11 +331,15 @@ function LoginForm() {
         return;
       }
 
+      localStorage.setItem("pashurakshak_user", JSON.stringify(data));
       localStorage.setItem("jeevraksha_user", JSON.stringify(data));
 
-      const historyStr = localStorage.getItem("jeevraksha_login_history");
+      const historyStr =
+        localStorage.getItem("pashurakshak_login_history") ||
+        localStorage.getItem("jeevraksha_login_history");
       const history = historyStr ? JSON.parse(historyStr) : [];
       history.push({ email: data.email, role: data.role, timestamp: new Date().toISOString() });
+      localStorage.setItem("pashurakshak_login_history", JSON.stringify(history));
       localStorage.setItem("jeevraksha_login_history", JSON.stringify(history));
 
       router.push(targetDestination);
@@ -712,16 +720,16 @@ function LoginForm() {
               <div className="space-y-1.5 text-xs font-semibold">
                 <button
                   type="button"
-                  onClick={() => fillCredentials("vet@jeevraksha.in", "password123")}
+                  onClick={() => fillCredentials("vet@pashurakshak.in", "password123")}
                   className={`w-full p-2.5 rounded-xl text-left transition flex items-center justify-between cursor-pointer ${
-                    email === "vet@jeevraksha.in"
+                    email === "vet@pashurakshak.in"
                       ? "bg-amber-100 text-amber-900 border border-amber-300"
                       : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
                     <span>🩺</span>
-                    <span><strong>Dr. Anil Verma:</strong> vet@jeevraksha.in</span>
+                    <span><strong>Dr. Anil Verma:</strong> vet@pashurakshak.in</span>
                   </span>
                   <span className="text-[9px] font-black text-amber-800 uppercase bg-amber-200/60 px-2 py-0.5 rounded-full">
                     Approved Vet
@@ -730,16 +738,16 @@ function LoginForm() {
 
                 <button
                   type="button"
-                  onClick={() => fillCredentials("applicant.vet@jeevraksha.in", "password123")}
+                  onClick={() => fillCredentials("applicant.vet@pashurakshak.in", "password123")}
                   className={`w-full p-2 rounded-xl text-left transition flex items-center justify-between cursor-pointer ${
-                    email === "applicant.vet@jeevraksha.in"
+                    email === "applicant.vet@pashurakshak.in"
                       ? "bg-amber-100 text-amber-900 border border-amber-300"
                       : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
                     <span>⏳</span>
-                    <span><strong>Dr. Sneha (Applicant):</strong> applicant.vet@jeevraksha.in</span>
+                    <span><strong>Dr. Sneha (Applicant):</strong> applicant.vet@pashurakshak.in</span>
                   </span>
                   <span className="text-[9px] font-black text-orange-700 uppercase bg-orange-100 px-2 py-0.5 rounded-full">
                     Pending Review
@@ -752,16 +760,16 @@ function LoginForm() {
               <div className="space-y-1.5 text-xs font-semibold">
                 <button
                   type="button"
-                  onClick={() => fillCredentials("admin@jeevraksha.in", "password123")}
+                  onClick={() => fillCredentials("admin@pashurakshak.in", "password123")}
                   className={`w-full p-2.5 rounded-xl text-left transition flex items-center justify-between cursor-pointer ${
-                    email === "admin@jeevraksha.in"
+                    email === "admin@pashurakshak.in"
                       ? "bg-purple-100 text-purple-900 border border-purple-300"
                       : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
                     <span>🛡️</span>
-                    <span><strong>System Admin:</strong> admin@jeevraksha.in</span>
+                    <span><strong>System Admin:</strong> admin@pashurakshak.in</span>
                   </span>
                   <span className="text-[9px] font-black text-purple-800 uppercase bg-purple-200/60 px-2 py-0.5 rounded-full">
                     Full Admin
@@ -770,16 +778,16 @@ function LoginForm() {
 
                 <button
                   type="button"
-                  onClick={() => fillCredentials("state.officer@jeevraksha.in", "password123")}
+                  onClick={() => fillCredentials("state.officer@pashurakshak.in", "password123")}
                   className={`w-full p-2 rounded-xl text-left transition flex items-center justify-between cursor-pointer ${
-                    email === "state.officer@jeevraksha.in"
+                    email === "state.officer@pashurakshak.in"
                       ? "bg-indigo-100 text-indigo-900 border border-indigo-300"
                       : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
                     <span>🏛️</span>
-                    <span><strong>State Officer:</strong> state.officer@jeevraksha.in</span>
+                    <span><strong>State Officer:</strong> state.officer@pashurakshak.in</span>
                   </span>
                   <span className="text-[9px] font-black text-indigo-800 uppercase bg-indigo-100 px-2 py-0.5 rounded-full">
                     State Wide
@@ -788,16 +796,16 @@ function LoginForm() {
 
                 <button
                   type="button"
-                  onClick={() => fillCredentials("pune.officer@jeevraksha.in", "password123")}
+                  onClick={() => fillCredentials("pune.officer@pashurakshak.in", "password123")}
                   className={`w-full p-2 rounded-xl text-left transition flex items-center justify-between cursor-pointer ${
-                    email === "pune.officer@jeevraksha.in"
+                    email === "pune.officer@pashurakshak.in"
                       ? "bg-blue-100 text-blue-900 border border-blue-300"
                       : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
                     <span>📍</span>
-                    <span><strong>District Officer:</strong> pune.officer@jeevraksha.in</span>
+                    <span><strong>District Officer:</strong> pune.officer@pashurakshak.in</span>
                   </span>
                   <span className="text-[9px] font-black text-blue-800 uppercase bg-blue-100 px-2 py-0.5 rounded-full">
                     Pune Dist
@@ -810,16 +818,16 @@ function LoginForm() {
               <div className="space-y-1.5 text-xs font-semibold">
                 <button
                   type="button"
-                  onClick={() => fillCredentials("farmer@jeevraksha.in", "password123")}
+                  onClick={() => fillCredentials("farmer@pashurakshak.in", "password123")}
                   className={`w-full p-2.5 rounded-xl text-left transition flex items-center justify-between cursor-pointer ${
-                    email === "farmer@jeevraksha.in"
+                    email === "farmer@pashurakshak.in"
                       ? "bg-green-100 text-green-900 border border-green-300"
                       : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
                     <span>🌾</span>
-                    <span><strong>Ramesh Patil:</strong> farmer@jeevraksha.in</span>
+                    <span><strong>Ramesh Patil:</strong> farmer@pashurakshak.in</span>
                   </span>
                   <span className="text-[9px] font-black text-green-800 uppercase bg-green-200/60 px-2 py-0.5 rounded-full">
                     Dairy Farmer

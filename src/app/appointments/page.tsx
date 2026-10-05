@@ -126,16 +126,21 @@ export default function AppointmentsPage() {
   // Load appointments from localStorage or demo
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("jeevraksha_appointments");
+      const stored =
+        localStorage.getItem("pashurakshak_appointments") ||
+        localStorage.getItem("jeevraksha_appointments");
       if (stored) {
         setAppointments(JSON.parse(stored));
       } else {
         setAppointments(INITIAL_DEMO_APPOINTMENTS);
+        localStorage.setItem("pashurakshak_appointments", JSON.stringify(INITIAL_DEMO_APPOINTMENTS));
         localStorage.setItem("jeevraksha_appointments", JSON.stringify(INITIAL_DEMO_APPOINTMENTS));
       }
 
       // Pre-fill user data if logged in
-      const userStr = localStorage.getItem("jeevraksha_user");
+      const userStr =
+        localStorage.getItem("pashurakshak_user") ||
+        localStorage.getItem("jeevraksha_user");
       if (userStr) {
         const user = JSON.parse(userStr);
         if (user.name) setFarmerName(user.name);
@@ -179,6 +184,7 @@ export default function AppointmentsPage() {
   const saveAppointments = (newList: Appointment[]) => {
     setAppointments(newList);
     try {
+      localStorage.setItem("pashurakshak_appointments", JSON.stringify(newList));
       localStorage.setItem("jeevraksha_appointments", JSON.stringify(newList));
     } catch (e) {
       console.error(e);
@@ -285,7 +291,7 @@ export default function AppointmentsPage() {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-base font-black tracking-tight text-[#16261B]">Jeev Rakshak</span>
+                <span className="text-base font-black tracking-tight text-[#16261B]">Pashu Rakshak</span>
                 <span className="text-[9px] font-black uppercase tracking-wider bg-[#DCEFE1] text-[#2E7D46] px-1.5 py-0.5 rounded">
                   Vet Connect
                 </span>
@@ -435,7 +441,7 @@ export default function AppointmentsPage() {
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="text-base sm:text-lg font-black tracking-tight text-[#16261B] whitespace-nowrap">
-                  Jeev Rakshak
+                  Pashu Rakshak
                 </span>
                 <span className="hidden sm:inline-block text-[10px] font-extrabold uppercase tracking-wider bg-[#DCEFE1] text-[#2E7D46] px-2 py-0.5 rounded-full border border-[#2E7D46]/20">
                   Vet Connect
@@ -1415,7 +1421,7 @@ export default function AppointmentsPage() {
               Built with ❤️ for Indian Farmers & Veterinary Officers • SIH26128
             </div>
             <div>
-              © {new Date().getFullYear()} Pashu Rakshak / Jeev Rakshak. All rights reserved.
+              © {new Date().getFullYear()} Pashu Rakshak (पशु रक्षक). All rights reserved.
             </div>
           </div>
         </div>

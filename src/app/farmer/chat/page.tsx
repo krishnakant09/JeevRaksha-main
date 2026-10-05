@@ -10,7 +10,7 @@ export default function ChatPage() {
   const [user, setUser] = useState<any>(null);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<{ role: string; content: string; image?: string }[]>([
-    { role: "assistant", content: "नमस्ते! मैं जीव-रक्षा का AI सहायक हूँ। आपके पशु को क्या परेशानी है? आप फोटो भी भेज सकते हैं। (Hello! I am JeevRaksha's AI assistant. What is wrong with your animal? You can also upload a photo.)" }
+    { role: "assistant", content: "नमस्ते! मैं पशु रक्षक का AI सहायक हूँ। आपके पशु को क्या परेशानी है? आप फोटो भी भेज सकते हैं। (Hello! I am Pashu Rakshak's AI assistant. What is wrong with your animal? You can also upload a photo.)" }
   ]);
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -21,7 +21,9 @@ export default function ChatPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("jeevraksha_user");
+    const stored =
+      localStorage.getItem("pashurakshak_user") ||
+      localStorage.getItem("jeevraksha_user");
     if (!stored) {
       router.push("/login?redirect=/farmer/chat");
       return;

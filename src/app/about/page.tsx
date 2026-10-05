@@ -22,7 +22,7 @@ import {
   Crown,
   Github,
   Linkedin,
-  Mail,
+  Instagram,
   Star,
   Quote,
   Menu,
@@ -58,47 +58,30 @@ interface TeamMember {
   socials?: {
     github?: string;
     linkedin?: string;
+    instagram?: string;
     email?: string;
   };
 }
 
 const FOUNDER_LEADER: TeamMember = {
-  id: "krishnakant",
-  name: "Krishnakant Sharma",
-  role: "Full Stack Architect",
-  category: "ai",
-  categoryLabel: "Full-Stack Architecture",
+  id: "ompal",
+  name: "Om Pal",
+  role: "Domain Specialist & Protocol Analyst",
+  category: "domain",
+  categoryLabel: "Veterinary Protocol",
   lead: true,
-  tagline: "System Architecture, Real-Time Syndromic Surveillance & Strategic Vision",
-  avatarEmoji: "👨‍💻",
-  initials: "KS",
-  photoUrl: "/team/krishnakant.jpg",
-  secondaryPhotoUrl: "/team/krishnakant-work.jpg",
-  secondaryPhotoCaption:
-    "Krishnakant presenting Jeev Rakshak live disease surveillance GIS telemetry & syndromic triage pipeline on the Grand Finale stage at Smart India Hackathon.",
-  focus: "End-to-End System Design, Backend Schemas & SIH Strategy",
+  tagline: "Epidemiological SOPs, FMD/LSD Guidelines & Maharashtra Demographics",
+  avatarEmoji: "🩺",
+  initials: "OP",
+  photoUrl: "/team/ompal.jpg",
+  focus: "Epidemiological SOPs & Maharashtra Context",
   description:
-    "Spearheaded overall platform architecture, Next.js 16 full-stack structure, Prisma database models, multi-tier jurisdiction filtering, and seamless orchestration of AI, telephony, and surveillance feeds.",
-  contributions: [
-    "Zero-lag syndromic triage pipeline for 535M+ Indian livestock context",
-    "Taluka, District, & State role-based administrative isolation & GIS engine",
-    "Offline speech recognition, IVR telephonic bridge, & automated dispatch",
-    "Solution alignment for SIH26128 with Govt. of Maharashtra guidelines",
-  ],
-  skills: [
-    "Next.js 16",
-    "TypeScript",
-    "Prisma ORM",
-    "System Architecture",
-    "PostgreSQL",
-    "Node.js",
-    "API Security",
-    "Docker",
-  ],
+    "Researched endemic livestock diseases (FMD, LSD, HS, PPR), Maharashtra livestock demographics (Pune, Satara, Ahmednagar), and government veterinary response protocols.",
+  skills: ["Livestock Healthcare", "Epidemiology", "FMD / LSD SOPs", "Data Analysis", "Field SOPs"],
   socials: {
     github: "https://github.com",
     linkedin: "https://linkedin.com",
-    email: "mailto:contact@jeevrakshak.in",
+    instagram: "https://instagram.com/om12_7488",
   },
 };
 
@@ -120,27 +103,45 @@ const CORE_TEAM: TeamMember[] = [
     socials: {
       github: "https://github.com",
       linkedin: "https://linkedin.com",
-      email: "mailto:raj@jeevrakshak.in",
+      instagram: "https://instagram.com/_whisperingwill0w",
     },
   },
   {
-    id: "aman",
-    name: "Aman Sharma",
-    role: "User Experience & Accessibility Specialist",
-    category: "ux",
-    categoryLabel: "Design & UX",
-    tagline: "Low-Literacy UI, High-Contrast Design & Voice Workflows",
-    avatarEmoji: "🎨",
-    initials: "AS",
-    photoUrl: "/team/aman.jpg",
-    focus: "Rural Farmer Usability & Responsive Interfaces",
+    id: "krishnakant",
+    name: "Krishnakant Sharma",
+    role: "Full Stack Architect",
+    category: "ai",
+    categoryLabel: "Full-Stack Architecture",
+    tagline: "System Architecture, Real-Time Syndromic Surveillance & Strategic Vision",
+    avatarEmoji: "👨‍💻",
+    initials: "KS",
+    photoUrl: "/team/krishnakant.jpg",
+    secondaryPhotoUrl: "/team/krishnakant-work.jpg",
+    secondaryPhotoCaption:
+      "Krishnakant presenting Pashu Rakshak live disease surveillance GIS telemetry & syndromic triage pipeline on the Grand Finale stage at Smart India Hackathon.",
+    focus: "End-to-End System Design, Backend Schemas & SIH Strategy",
     description:
-      "Crafted low-literacy-first user journeys, high-contrast rustic design tokens, bilingual voice assistant interactions, and GIS surveillance heatmaps.",
-    skills: ["Tailwind CSS", "React", "WCAG 2.1", "Figma", "Responsive Web", "UX Research"],
+      "Spearheaded overall platform architecture, Next.js 16 full-stack structure, Prisma database models, multi-tier jurisdiction filtering, and seamless orchestration of AI, telephony, and surveillance feeds.",
+    contributions: [
+      "Zero-lag syndromic triage pipeline for 535M+ Indian livestock context",
+      "Taluka, District, & State role-based administrative isolation & GIS engine",
+      "Offline speech recognition, IVR telephonic bridge, & automated dispatch",
+      "Solution alignment for SIH26128 with Govt. of Maharashtra guidelines",
+    ],
+    skills: [
+      "Next.js 16",
+      "TypeScript",
+      "Prisma ORM",
+      "System Architecture",
+      "PostgreSQL",
+      "Node.js",
+      "API Security",
+      "Docker",
+    ],
     socials: {
-      github: "https://github.com",
-      linkedin: "https://linkedin.com",
-      email: "mailto:aman@jeevrakshak.in",
+      github: "https://github.com/krishnakant09",
+      linkedin: "https://linkedin.com/in/krishnakant-sharma09",
+      instagram: "https://instagram.com/sharma.kk9005",
     },
   },
   {
@@ -160,27 +161,27 @@ const CORE_TEAM: TeamMember[] = [
     socials: {
       github: "https://github.com",
       linkedin: "https://linkedin.com",
-      email: "mailto:ojash@jeevrakshak.in",
+      instagram: "https://instagram.com/dwivedi_ojash",
     },
   },
   {
-    id: "ompal",
-    name: "Ompal",
-    role: "Domain Specialist & Protocol Analyst",
-    category: "domain",
-    categoryLabel: "Veterinary Protocol",
-    tagline: "Epidemiological SOPs, FMD/LSD Guidelines & Maharashtra Demographics",
-    avatarEmoji: "🩺",
-    initials: "OP",
-    photoUrl: "/team/ompal.jpg",
-    focus: "Epidemiological SOPs & Maharashtra Context",
+    id: "aman",
+    name: "Aman Sharma",
+    role: "User Experience & Accessibility Specialist",
+    category: "ux",
+    categoryLabel: "Design & UX",
+    tagline: "Low-Literacy UI, High-Contrast Design & Voice Workflows",
+    avatarEmoji: "🎨",
+    initials: "AS",
+    photoUrl: "/team/aman.jpg",
+    focus: "Rural Farmer Usability & Responsive Interfaces",
     description:
-      "Researched endemic livestock diseases (FMD, LSD, HS, PPR), Maharashtra livestock demographics (Pune, Satara, Ahmednagar), and government veterinary response protocols.",
-    skills: ["Livestock Healthcare", "Epidemiology", "FMD / LSD SOPs", "Data Analysis", "Field SOPs"],
+      "Crafted low-literacy-first user journeys, high-contrast rustic design tokens, bilingual voice assistant interactions, and GIS surveillance heatmaps.",
+    skills: ["Tailwind CSS", "React", "WCAG 2.1", "Figma", "Responsive Web", "UX Research"],
     socials: {
       github: "https://github.com",
       linkedin: "https://linkedin.com",
-      email: "mailto:ompal@jeevrakshak.in",
+      instagram: "https://instagram.com/amanziingg_",
     },
   },
   {
@@ -200,7 +201,7 @@ const CORE_TEAM: TeamMember[] = [
     socials: {
       github: "https://github.com",
       linkedin: "https://linkedin.com",
-      email: "mailto:ritika@jeevrakshak.in",
+      instagram: "https://instagram.com/hey.itz_ritzz",
     },
   },
 ];
@@ -240,9 +241,8 @@ function ScrollReveal({
     <div
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-all duration-700 ease-out transform ${
-        isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-10 scale-[0.98]"
-      } ${className}`}
+      className={`transition-all duration-700 ease-out transform ${isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-10 scale-[0.98]"
+        } ${className}`}
     >
       {children}
     </div>
@@ -360,13 +360,15 @@ function TeamMemberCard({ member }: { member: TeamMember }) {
                 <Linkedin className="w-3.5 h-3.5" />
               </a>
             )}
-            {member.socials?.email && (
+            {member.socials?.instagram && (
               <a
-                href={member.socials.email}
-                className="w-8 h-8 rounded-lg bg-[#F4F7F2] hover:bg-[#DCEFE1] text-[#C8372D] flex items-center justify-center transition border border-[#D5DDD0] shadow-2xs hover:scale-105 cursor-pointer"
-                title="Email"
+                href={member.socials.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-lg bg-[#F4F7F2] hover:bg-pink-50 text-[#E1306C] hover:text-[#C13584] flex items-center justify-center transition border border-[#D5DDD0] shadow-2xs hover:scale-105 cursor-pointer"
+                title="Instagram"
               >
-                <Mail className="w-3.5 h-3.5" />
+                <Instagram className="w-3.5 h-3.5" />
               </a>
             )}
           </div>
@@ -418,9 +420,8 @@ export default function AboutPage() {
     <div className="min-h-screen bg-[#F4F7F2] text-[#16261B] overflow-x-hidden selection:bg-[#2E7D46] selection:text-white">
       {/* ── MOBILE MENU OVERLAY ── */}
       <div
-        className={`lg:hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 transition-opacity duration-300 ${
-          isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className={`lg:hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 transition-opacity duration-300 ${isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
         onClick={() => setIsMobileMenuOpen(false)}
         aria-hidden="true"
       />
@@ -429,9 +430,8 @@ export default function AboutPage() {
       <aside
         id="about-mobile-navigation-drawer"
         aria-label="Mobile Navigation"
-        className={`lg:hidden fixed top-0 right-0 bottom-0 w-[86vw] max-w-sm bg-white z-50 shadow-2xl flex flex-col border-l border-[#D5DDD0] transition-transform duration-300 ease-in-out ${
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`lg:hidden fixed top-0 right-0 bottom-0 w-[86vw] max-w-sm bg-white z-50 shadow-2xl flex flex-col border-l border-[#D5DDD0] transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         {/* Drawer Header */}
         <div className="p-4 border-b border-[#D5DDD0] bg-[#F7F9F5] flex items-center justify-between gap-2 shrink-0">
@@ -441,7 +441,7 @@ export default function AboutPage() {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-base font-black tracking-tight text-[#16261B]">Jeev Rakshak</span>
+                <span className="text-base font-black tracking-tight text-[#16261B]">Pashu Rakshak</span>
                 <span className="text-[9px] font-black uppercase tracking-wider bg-[#DCEFE1] text-[#2E7D46] px-1.5 py-0.5 rounded">
                   SIH26128
                 </span>
@@ -591,14 +591,14 @@ export default function AboutPage() {
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="text-base sm:text-lg font-black tracking-tight text-[#16261B] whitespace-nowrap">
-                  Jeev Rakshak
+                  Pashu Rakshak
                 </span>
                 <span className="hidden sm:inline-block text-[10px] font-extrabold uppercase tracking-wider bg-[#DCEFE1] text-[#2E7D46] px-2 py-0.5 rounded-full border border-[#2E7D46]/20">
                   SIH26128
                 </span>
               </div>
               <p className="hidden sm:block text-[11px] font-semibold text-[#5B6B5F] -mt-0.5 truncate">
-                Pashu Rakshak • Livestock Disease Surveillance Grid
+                पशु रक्षक • Livestock Disease Surveillance Grid
               </p>
             </div>
           </Link>
@@ -679,7 +679,7 @@ export default function AboutPage() {
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15]">
             The Engineering Minds Behind <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FBEFCF] via-white to-[#DCEFE1]">
-              Pashu Rakshak (Jeev Rakshak)
+              Pashu Rakshak (पशु रक्षक)
             </span>
           </h1>
 
@@ -779,11 +779,10 @@ export default function AboutPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-                    activeTab === tab.id
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${activeTab === tab.id
                       ? "bg-[#2E7D46] text-white shadow-sm"
                       : "bg-white text-[#5B6B5F] hover:bg-[#EEF2EA] hover:text-[#16261B] border border-[#D5DDD0]"
-                  }`}
+                    }`}
                 >
                   {tab.label}
                 </button>
@@ -977,7 +976,7 @@ export default function AboutPage() {
               </div>
               <div>
                 <div className="font-extrabold text-white text-sm">
-                  Pashu Rakshak (Jeev Rakshak)
+                  Pashu Rakshak (पशु रक्षक)
                 </div>
                 <div className="text-[11px] text-white/50">
                   Problem Statement SIH26128 • Animal Husbandry Department
@@ -1009,7 +1008,7 @@ export default function AboutPage() {
               Built with ❤️ for Indian Farmers & Veterinary Officers • SIH26128
             </div>
             <div>
-              © {new Date().getFullYear()} Pashu Rakshak / Jeev Rakshak. All rights reserved.
+              © {new Date().getFullYear()} Pashu Rakshak (पशु रक्षक). All rights reserved.
             </div>
           </div>
         </div>

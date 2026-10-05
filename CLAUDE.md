@@ -217,6 +217,29 @@
 
 ---
 
+### 8. Full Project Renaming: Jeev Rakshak -> Pashu Rakshak (पशु रक्षक)
+- **Brand Identity & UI Copy:**
+  - Updated all public-facing navigation, headers, footers, meta title, and descriptions across `/`, `/about`, `/login`, `/register`, `/appointments`, `/dashboard`, and `/farmer`.
+  - Updated Hindi / Marathi translations across prompts, greetings, and AI assistant intros (`"नमस्ते! मैं पशु रक्षक का AI सहायक हूँ..."`).
+  - Updated SMS templates to: `[Pashu Rakshak / पशु रक्षक] Aapka verification code hai...`.
+- **Package Configuration:**
+  - Renamed package in `package.json` to `"name": "pashurakshak"`.
+- **Zero-Disruption Dual-Storage & Backward Compatibility:**
+  - Session storage writes both `pashurakshak_user` and `jeevraksha_user` to avoid invalidating active sessions.
+  - Auth login route `/api/auth/login` seamlessly aliases `@pashurakshak.in` and `@jeevraksha.in` credentials so demo accounts log in with either domain.
+  - User DB helper checks and writes both `@pashurakshak.gov.in` and legacy `@jeevraksha.gov.in` pseudo-emails.
+  - OTP challenge cookies support both `pashurakshak_otp_challenge` and legacy cookie names.
+- **About Page Team Roster (`src/app/about/page.tsx`):**
+  - Updated team order placing **Om Pal** in 1st place as **Team Lead** (`lead: true` with Team Lead crown badge).
+  - Placed **Krishnakant Sharma** in the Core Team grid while preserving all original bios, skill sets, and descriptions.
+  - Swapped Instagram icon and profile links for all 6 members' social connect slots.
+- **Streamlined Professional Homepage Footer (`src/app/page.tsx`):**
+  - Clean, compact single-tier footer layout with brand logo, SIH26128 badge, mission subtitle, clean horizontal navigation, and social connect buttons (Instagram, GitHub, LinkedIn).
+  - Maintained sleek government alignment and copyright line without clutter.
+- **Git Status:** All changes are kept uncommitted and unpushed in the working directory as explicitly requested by user.
+
+---
+
 ## 📁 Key File Map
 
 | Path | Description |

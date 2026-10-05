@@ -19,16 +19,20 @@ export interface DBUser {
 }
 
 export async function findUserByPhone(phone: string): Promise<DBUser | null> {
-  const pseudoEmail = `farmer_${phone}@jeevraksha.gov.in`;
-  const pseudoVetEmail = `vet_${phone}@jeevraksha.gov.in`;
+  const pseudoEmail = `farmer_${phone}@pashurakshak.gov.in`;
+  const legacyPseudoEmail = `farmer_${phone}@jeevraksha.gov.in`;
+  const pseudoVetEmail = `vet_${phone}@pashurakshak.gov.in`;
+  const legacyPseudoVetEmail = `vet_${phone}@jeevraksha.gov.in`;
   const pseudoOfficerEmail = `officer_${phone}@maharashtra.gov.in`;
 
   try {
     const rows: any[] = await prisma.$queryRawUnsafe(
-      "SELECT * FROM User WHERE phone = ? OR email IN (?, ?, ?) LIMIT 1",
+      "SELECT * FROM User WHERE phone = ? OR email IN (?, ?, ?, ?, ?) LIMIT 1",
       phone,
       pseudoEmail,
+      legacyPseudoEmail,
       pseudoVetEmail,
+      legacyPseudoVetEmail,
       pseudoOfficerEmail
     );
     if (rows && rows.length > 0) return rows[0];
@@ -49,7 +53,7 @@ export async function upsertFarmerUser(params: {
 }): Promise<DBUser> {
   const existing = await findUserByPhone(params.phone);
   const now = new Date().toISOString();
-  const pseudoEmail = `farmer_${params.phone}@jeevraksha.gov.in`;
+  const pseudoEmail = `farmer_${params.phone}@pashurakshak.gov.in`;
 
   if (existing) {
     await prisma.$executeRawUnsafe(
@@ -114,7 +118,7 @@ export async function upsertVetUser(params: {
 }): Promise<DBUser> {
   const existing = await findUserByPhone(params.phone);
   const now = new Date().toISOString();
-  const pseudoEmail = `vet_${params.phone}@jeevraksha.gov.in`;
+  const pseudoEmail = `vet_${params.phone}@pashurakshak.gov.in`;
 
   if (existing) {
     await prisma.$executeRawUnsafe(

@@ -40,7 +40,9 @@ export async function POST(req: Request) {
     // If not found in DB or memory (e.g. serverless stateless request across instances), check challenge token
     if (!attempt) {
       const cookieHeader = req.headers.get("cookie") || "";
-      const cookieTokenMatch = cookieHeader.match(/jeevraksha_otp_challenge=([^;]+)/);
+      const cookieTokenMatch =
+        cookieHeader.match(/pashurakshak_otp_challenge=([^;]+)/) ||
+        cookieHeader.match(/jeevraksha_otp_challenge=([^;]+)/);
       const tokenCandidate = body.otpChallengeToken || (cookieTokenMatch ? cookieTokenMatch[1] : null);
 
       if (tokenCandidate) {
@@ -149,6 +151,7 @@ export async function POST(req: Request) {
           vetProfile: existingUser.vetProfile,
         },
       });
+      response.cookies.delete("pashurakshak_otp_challenge");
       response.cookies.delete("jeevraksha_otp_challenge");
       return response;
     }
@@ -163,6 +166,7 @@ export async function POST(req: Request) {
         },
         { status: 404 }
       );
+      response.cookies.delete("pashurakshak_otp_challenge");
       response.cookies.delete("jeevraksha_otp_challenge");
       return response;
     }
@@ -175,6 +179,7 @@ export async function POST(req: Request) {
       token,
       message: "Phone verified successfully. Please proceed with account details.",
     });
+    response.cookies.delete("pashurakshak_otp_challenge");
     response.cookies.delete("jeevraksha_otp_challenge");
     return response;
   } catch (err: any) {

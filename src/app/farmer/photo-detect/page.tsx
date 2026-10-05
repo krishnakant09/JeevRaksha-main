@@ -44,7 +44,9 @@ export default function PhotoDetectPage() {
 
   // Authentication check: Login required
   useEffect(() => {
-    const stored = localStorage.getItem("jeevraksha_user");
+    const stored =
+      localStorage.getItem("pashurakshak_user") ||
+      localStorage.getItem("jeevraksha_user");
     if (!stored) {
       router.replace("/login?redirect=/farmer/photo-detect");
       return;

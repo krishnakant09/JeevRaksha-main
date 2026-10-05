@@ -50,7 +50,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const isFarmer = user?.role === "FARMER";
 
   useEffect(() => {
-    const stored = localStorage.getItem("jeevraksha_user");
+    const stored =
+      localStorage.getItem("pashurakshak_user") ||
+      localStorage.getItem("jeevraksha_user");
     if (!stored) {
       const redirectUrl = window.location.pathname + window.location.search;
       if (isDoctorRoute) {
@@ -105,6 +107,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const closeMenu = () => setIsMobileMenuOpen(false);
 
   const handleLogout = () => {
+    localStorage.removeItem("pashurakshak_user");
     localStorage.removeItem("jeevraksha_user");
     window.location.href = "/";
   };
@@ -121,7 +124,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
         <div className="w-8 h-8 border-3 border-gray-400 border-t-transparent rounded-full animate-spin mb-3" />
         <p className="text-sm font-bold text-gray-800">Verifying Security Credentials...</p>
-        <p className="text-xs text-gray-400 mt-1">JeevRaksha Role-Based Access Control</p>
+        <p className="text-xs text-gray-400 mt-1">Pashu Rakshak Role-Based Access Control</p>
       </div>
     );
   }
@@ -189,13 +192,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </Link>
             <button
               onClick={() => {
+                localStorage.removeItem("pashurakshak_user");
                 localStorage.removeItem("jeevraksha_user");
                 router.push("/login?role=vet&redirect=/dashboard/cases");
               }}
               className="w-full py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5"
             >
               <Stethoscope className="w-4 h-4 text-amber-600" />
-              <span>Sign In with Doctor Account (vet@jeevraksha.in)</span>
+              <span>Sign In with Doctor Account (vet@pashurakshak.in)</span>
             </button>
           </div>
         </div>

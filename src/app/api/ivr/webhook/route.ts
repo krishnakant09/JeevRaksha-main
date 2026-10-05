@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 <Response>
   <Gather numDigits="1" action="/api/ivr/webhook?step=symptoms" method="POST" timeout="10">
     <Say language="hi-IN" voice="Polly.Aditi">
-      नमस्ते! जीव रक्षा एवं पशु रक्षक राष्ट्रीय आपातकालीन हेल्पलाइन में आपका स्वागत है।
+      नमस्ते! पशु रक्षक राष्ट्रीय आपातकालीन हेल्पलाइन में आपका स्वागत है।
       पशु की पहचान के लिए:
       गाय के लिए एक दबाएं।
       भैंस के लिए दो दबाएं।
